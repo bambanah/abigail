@@ -1,3 +1,4 @@
+import Input from "@atoms/input";
 import Layout from "@layouts/layout";
 import React from "react";
 
@@ -10,6 +11,8 @@ const DashboardPage = () => {
 						Hello World!
 					</h1>
 					<p>This is the Next.js tailwind template</p>
+					<Input placeholder="Salary" />
+					<Input placeholder="Weekly Rate" />
 				</div>
 			</div>
 		</Layout>
