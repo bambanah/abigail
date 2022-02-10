@@ -6,7 +6,8 @@ module.exports = {
 		extend: {
 			fontFamily: {
 				sans: ["Inter", ...defaultTheme.fontFamily.sans],
-				display: ["Outfit", '"Playfair Display"', "sans-serif"],
+				serif: ["Spectral", "Lora", ...defaultTheme.fontFamily.serif],
+				display: ["Outfit", ...defaultTheme.fontFamily.sans],
 			},
 		},
 	},
