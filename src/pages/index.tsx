@@ -1,4 +1,5 @@
 import Input from "@atoms/input";
+import Label from "@atoms/label";
 import Layout from "@layouts/layout";
 import React, { useEffect, useState } from "react";
 
@@ -30,16 +31,23 @@ const DashboardPage = () => {
 					<h1 className="text-5xl font-bold font-display text-violet-500">
 						Hello World!
 					</h1>
-					<Input
-						placeholder="Salary"
-						value={salary}
-						onChange={(e) => setSalary(e.target.value)}
-					/>
-					<Input
-						value={weeklyRate}
-						onChange={(e) => setWeeklyRate(e.target.value)}
-						placeholder="Weekly Rate"
-					/>
+					<Label>
+						<span>Salary</span>
+						<Input
+							placeholder="Salary"
+							value={salary}
+							onChange={(e) => setSalary(e.target.value)}
+						/>
+					</Label>
+
+					<Label>
+						<span>Weekly Rate</span>
+						<Input
+							value={weeklyRate}
+							onChange={(e) => setWeeklyRate(e.target.value)}
+							placeholder="Weekly Rate"
+						/>
+					</Label>
 
 					<div>
 						<p>
