@@ -21,6 +21,8 @@ export const calculateSavings = (finances: Finance) => {
 
 	const savings = postExpensesAmount - finances.desiredFunMoney * 12;
 
+	if (savings < 0) return;
+
 	return round(savings + fhss * 0.85, 2);
 };
 

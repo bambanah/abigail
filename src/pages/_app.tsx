@@ -6,7 +6,7 @@ function App({ Component, pageProps }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>Next.js Tailwind Template</title>
+				<title>Abigail</title>
 			</Head>
 
 			<Component {...pageProps} />
