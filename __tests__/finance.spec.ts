@@ -21,7 +21,7 @@ describe("Logic Tests", () => {
 			hecs: true,
 			desiredFunMoney: 1200,
 			bonus: 28_000,
-			expenses: {
+			monthlyExpenses: {
 				rent: 400,
 				rest: 2000,
 			},
@@ -29,7 +29,8 @@ describe("Logic Tests", () => {
 
 		const savings = calculateSavings(finances);
 
-		expect(savings).toEqual(65_431);
+		expect(savings.savings).toEqual(73_573);
+		expect(savings.super).toEqual(13_800);
 	});
 
 	it("Should calculate savings without FHSS", () => {
@@ -39,7 +40,7 @@ describe("Logic Tests", () => {
 			hecs: true,
 			desiredFunMoney: 1200,
 			bonus: 28_000,
-			expenses: {
+			monthlyExpenses: {
 				rent: 400,
 				rest: 2000,
 			},
@@ -47,7 +48,86 @@ describe("Logic Tests", () => {
 
 		const savings = calculateSavings(finances);
 
-		expect(savings).toEqual(61_531);
+		expect(savings.savings).toEqual(69_673);
+		expect(savings.super).toEqual(13_800);
+	});
+
+	it("Should calculate advantage of novated lease vs Lachie car", () => {
+		const baseSalary = 138_000;
+		const leaseAnnual = 121 * 52;
+
+		const withoutLease: Finance = {
+			salary: baseSalary,
+			utiliseFHSS: true,
+			hecs: true,
+			desiredFunMoney: 0,
+			bonus: 28_000,
+			monthlyExpenses: {
+				fuel: 160,
+				service: 500 / 12,
+				rego: 750 / 12,
+			},
+		};
+		const withoutLeaseSavings = calculateSavings(withoutLease);
+
+		const withLease = {
+			salary: baseSalary - leaseAnnual,
+			utiliseFHSS: true,
+			hecs: true,
+			desiredFunMoney: 0,
+			bonus: 28_000,
+		};
+		const withLeaseSurplus = calculateSavings(withLease);
+
+		// Novated lease costs $547 a year more than running a car
+		expect(
+			Math.floor(withoutLeaseSavings.savings - withLeaseSurplus.savings)
+		).toEqual(542);
+
+		const carValue = 59_111;
+		const balloonAmount = carValue * 0.3;
+
+		const totalCost = leaseAnnual * 5 + balloonAmount;
+		expect(totalCost).toEqual(49_193.3);
+	});
+
+	it("Should calculate advantage of Navara on novated lease vs Patsy", () => {
+		const baseSalary = 138_000;
+		const leaseAnnual = 212 * 52;
+
+		const withoutLease: Finance = {
+			salary: baseSalary,
+			utiliseFHSS: true,
+			hecs: true,
+			desiredFunMoney: 0,
+			bonus: 28_000,
+			monthlyExpenses: {
+				fuel: 200,
+				service: 600 / 12,
+				rego: 750 / 12,
+			},
+		};
+		const withoutLeaseSavings = calculateSavings(withoutLease);
+
+		const withLease = {
+			salary: baseSalary - leaseAnnual,
+			utiliseFHSS: true,
+			hecs: true,
+			desiredFunMoney: 0,
+			bonus: 28_000,
+		};
+		const withLeaseSurplus = calculateSavings(withLease);
+
+		// Novated lease costs $2,754 a year more than running a car
+		expect(
+			Math.floor(withoutLeaseSavings.savings - withLeaseSurplus.savings)
+		).toEqual(2754);
+
+		const carValue = 59_111;
+		const balloonAmount = carValue * 0.3;
+
+		const totalCost = leaseAnnual * 5 + balloonAmount;
+		expect(totalCost).toEqual(72_853.3);
 	});
 });
 

@@ -6,24 +6,21 @@ export const calculateSavings = (finances: Finance) => {
 
 	const fhss = finances.utiliseFHSS ? 15_000 : 0;
 
-	const preTaxAmount =
-		finances.salary + (finances.bonus ?? 0) - superAmount - fhss;
+	const preTaxAmount = finances.salary + (finances.bonus ?? 0) - fhss;
 
-	const taxPaid = 0.15 * (superAmount + fhss) + calculateTax(preTaxAmount);
+	const postTaxAmount = calculatePostTaxAmount(preTaxAmount, true);
 
-	const hecsPaid = 0.04 * preTaxAmount;
+	let postExpensesAmount = postTaxAmount;
 
-	const postTaxAmount = preTaxAmount - hecsPaid - calculateTax(preTaxAmount);
-
-	const postExpensesAmount =
-		postTaxAmount -
-		Object.values(finances.expenses).reduce((a, b) => a + b, 0) * 12;
+	if (finances.monthlyExpenses) {
+		postExpensesAmount =
+			postTaxAmount -
+			Object.values(finances.monthlyExpenses).reduce((a, b) => a + b, 0) * 12;
+	}
 
 	const savings = postExpensesAmount - finances.desiredFunMoney * 12;
 
-	if (savings < 0) return;
-
-	return round(savings + fhss * 0.85, 2);
+	return { savings: round(savings + fhss * 0.85, 2), super: superAmount };
 };
 
 export const calculateTax = (amount: number) => {
@@ -38,4 +35,10 @@ export const calculateTax = (amount: number) => {
 	} else {
 		return 0;
 	}
+};
+
+export const calculatePostTaxAmount = (preTaxAmount: number, hecs = false) => {
+	const hecsPaid = hecs ? 0.04 * preTaxAmount : 0;
+
+	return preTaxAmount - hecsPaid - calculateTax(preTaxAmount);
 };

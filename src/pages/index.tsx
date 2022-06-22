@@ -23,7 +23,7 @@ const DashboardPage = () => {
 		const finances: Finance = {
 			salary: Number(salary),
 			desiredFunMoney: Number(desiredFunMoney),
-			expenses: {
+			monthlyExpenses: {
 				total: Number(expenses),
 			},
 		};
@@ -31,7 +31,7 @@ const DashboardPage = () => {
 		const calculatedSavings = calculateSavings(finances);
 
 		setSavings(
-			calculatedSavings?.toLocaleString(undefined, {
+			calculatedSavings?.savings.toLocaleString(undefined, {
 				minimumFractionDigits: 2,
 				maximumFractionDigits: 2,
 			}) ?? "N/A"

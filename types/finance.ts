@@ -3,7 +3,7 @@ import { Expenses } from "./expenses";
 export interface Finance {
 	salary: number;
 	bonus?: number;
-	expenses: Expenses;
+	monthlyExpenses?: Expenses;
 	desiredFunMoney: number;
 
 	utiliseFHSS?: boolean;
