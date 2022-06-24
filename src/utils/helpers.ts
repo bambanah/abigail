@@ -14,3 +14,7 @@ export function round(value: number, exp: number) {
 	valueArray = value.toString().split("e");
 	return +`${valueArray[0]}e${valueArray[1] ? +valueArray[1] - exp : -exp}`;
 }
+
+export const isValidNumber = (value: string) => {
+	return !Number.isNaN(value) && !Number.isNaN(Number.parseFloat(value));
+};

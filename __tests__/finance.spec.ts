@@ -29,7 +29,7 @@ describe("Logic Tests", () => {
 
 		const savings = calculateSavings(finances);
 
-		expect(savings.savings).toEqual(73_573);
+		expect(savings.savings).toEqual(64_513);
 		expect(savings.super).toEqual(13_800);
 	});
 
@@ -48,7 +48,7 @@ describe("Logic Tests", () => {
 
 		const savings = calculateSavings(finances);
 
-		expect(savings.savings).toEqual(69_673);
+		expect(savings.savings).toEqual(59_713);
 		expect(savings.super).toEqual(13_800);
 	});
 
@@ -79,10 +79,10 @@ describe("Logic Tests", () => {
 		};
 		const withLeaseSurplus = calculateSavings(withLease);
 
-		// Novated lease costs $547 a year more than running a car
+		// Novated lease costs $164 a year more than running a car
 		expect(
 			Math.floor(withoutLeaseSavings.savings - withLeaseSurplus.savings)
-		).toEqual(542);
+		).toEqual(164);
 
 		const carValue = 59_111;
 		const balloonAmount = carValue * 0.3;
@@ -118,10 +118,10 @@ describe("Logic Tests", () => {
 		};
 		const withLeaseSurplus = calculateSavings(withLease);
 
-		// Novated lease costs $2,754 a year more than running a car
+		// Novated lease costs $2,092 a year more than running a car
 		expect(
 			Math.floor(withoutLeaseSavings.savings - withLeaseSurplus.savings)
-		).toEqual(2754);
+		).toEqual(2092);
 
 		const carValue = 59_111;
 		const balloonAmount = carValue * 0.3;

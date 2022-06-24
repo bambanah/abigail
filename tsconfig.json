@@ -17,10 +17,10 @@
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitReturns": true,
 		"paths": {
-			"@atoms/*": ["src/atoms/*"],
+			"@atoms/*": ["src/components/atoms/*"],
 			"@context/*": ["src/context/*"],
-			"@layouts/*": ["src/layouts/*"],
-			"@molecules/*": ["src/molecules/*"],
+			"@layouts/*": ["src/components/layouts/*"],
+			"@molecules/*": ["src/components/molecules/*"],
 			"@organisms/*": ["src/organisms/*"],
 			"@pages/*": ["src/pages/*"],
 			"@styles/*": ["src/styles/*"],

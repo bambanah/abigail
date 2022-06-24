@@ -6,10 +6,7 @@ const Button: FC<ButtonHTMLAttributes<HTMLButtonElement>> = ({
 	...rest
 }) => {
 	return (
-		<button
-			className={`${className} font-sans bg-slate-200 p-4 rounded-md shadow-xl`}
-			{...rest}
-		>
+		<button className={`${className} btn`} {...rest}>
 			{children}
 		</button>
 	);
