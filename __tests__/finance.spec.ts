@@ -5,12 +5,14 @@ import {
 	calculateAnnualSavings,
 	calculateTotalExpenses,
 	forecastSavings,
+	getAdvantageOfFHSS,
 } from "@utils/finance";
 import { calculateHecsRepayment, calculateTax } from "@utils/finance-helpers";
 
 describe("finance calculation", () => {
 	const defaultSalary = 100_000;
 
+	// $18,300/year
 	const defaultExpenses: Expense[] = [
 		{ title: "expense1", amount: 150, cadence: "weekly" },
 		{ title: "expense2", amount: 500, cadence: "fortnightly" },
@@ -22,6 +24,7 @@ describe("finance calculation", () => {
 		expect(calculateTax(20_000)).toEqual(3800);
 		expect(calculateTax(44_000)).toEqual(8360);
 		expect(calculateTax(45_000)).toEqual(8550);
+		expect(calculateTax(85_000)).toEqual(18_092);
 		expect(calculateTax(119_000)).toEqual(29_142);
 		expect(calculateTax(124_000)).toEqual(30_947);
 		expect(calculateTax(179_800)).toEqual(51_593);
@@ -77,6 +80,7 @@ describe("finance calculation", () => {
 	it("Should calculate post tax amount", () => {
 		expect(calculatePostTaxAmount(50_000)).toEqual(43_283);
 		expect(calculatePostTaxAmount(80_000)).toEqual(63_533);
+		expect(calculatePostTaxAmount(85_000)).toEqual(66_908);
 		expect(calculatePostTaxAmount(100_000)).toEqual(77_033);
 		expect(calculatePostTaxAmount(120_000)).toEqual(90_533);
 	});
@@ -94,19 +98,6 @@ describe("finance calculation", () => {
 		expect(savings.super).toEqual(10_000);
 	});
 
-	it("Should calculate savings with HECS and expenses", () => {
-		const finances: FinancialDetails = {
-			salary: defaultSalary,
-			hecs: true,
-			expenses: defaultExpenses,
-		};
-
-		const savings = calculateAnnualSavings(finances);
-
-		expect(savings.cash).toEqual(51_733);
-		expect(savings.super).toEqual(10_000);
-	});
-
 	it("Should calculate savings with FHSS", () => {
 		const finances: FinancialDetails = {
 			salary: defaultSalary,
@@ -118,7 +109,44 @@ describe("finance calculation", () => {
 
 		const savings = calculateAnnualSavings(finances);
 
-		expect(savings.cash).toEqual(61_358);
+		expect(savings.cash).toEqual(61_103);
+		expect(savings.super).toEqual(10_000);
+	});
+
+	it("Should calculate advantage of FHSS", () => {
+		expect(
+			getAdvantageOfFHSS({ salary: 45_000, expenses: defaultExpenses })
+		).toEqual(600);
+		expect(
+			getAdvantageOfFHSS({ salary: 50_000, expenses: defaultExpenses })
+		).toEqual(-2183);
+		expect(
+			getAdvantageOfFHSS({ salary: 60_000, expenses: defaultExpenses })
+		).toEqual(-833);
+		expect(
+			getAdvantageOfFHSS({ salary: 60_001, expenses: defaultExpenses })
+		).toEqual(2370);
+		expect(
+			getAdvantageOfFHSS({ salary: 65_000, expenses: defaultExpenses })
+		).toEqual(2370);
+		expect(
+			getAdvantageOfFHSS({ salary: 100_000, expenses: defaultExpenses })
+		).toEqual(2370);
+		expect(
+			getAdvantageOfFHSS({ salary: 140_000, expenses: defaultExpenses })
+		).toEqual(2407.5);
+	});
+
+	it("Should calculate savings with HECS and expenses", () => {
+		const finances: FinancialDetails = {
+			salary: defaultSalary,
+			hecs: true,
+			expenses: defaultExpenses,
+		};
+
+		const savings = calculateAnnualSavings(finances);
+
+		expect(savings.cash).toEqual(51_733);
 		expect(savings.super).toEqual(10_000);
 	});
 
@@ -135,7 +163,7 @@ describe("finance calculation", () => {
 
 		const savings = calculateAnnualSavings(finances);
 
-		expect(savings.cash).toEqual(66_983);
+		expect(savings.cash).toEqual(66_728);
 		expect(savings.super).toEqual(10_000);
 	});
 

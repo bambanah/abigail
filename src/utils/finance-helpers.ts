@@ -53,3 +53,11 @@ export const calculateTax = (amount: number) => {
 		return 0;
 	}
 };
+
+export const getMarginalTaxRate = (amount: number) => {
+	if (amount > 180_000) return 0.45;
+	else if (amount > 120_000) return 0.37;
+	else if (amount > 45_000) return 0.32;
+	else if (amount > 18_200) return 0.19;
+	else return 0;
+};

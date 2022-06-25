@@ -1,23 +1,51 @@
 import { round } from "@utils/generic";
 import { FinancialDetails } from "@schema/financial-details-schema";
 import { Expense } from "@schema/expense-schema";
-import { calculateHecsRepayment, calculateTax } from "./finance-helpers";
+import {
+	calculateHecsRepayment,
+	calculateTax,
+	getMarginalTaxRate,
+} from "./finance-helpers";
 
 export const calculateAnnualSavings = (finances: FinancialDetails) => {
 	const fhss = finances.schemes?.fhss ? 15_000 : 0;
 
-	const preTaxAmount = finances.salary + (finances.bonus ?? 0) - fhss;
+	const assessableIncome = finances.salary + (finances.bonus ?? 0) - fhss;
+
+	const takeHomeIncome = calculatePostTaxAmount(
+		assessableIncome,
+		finances.hecs
+	);
 
 	const postExpensesAmount =
-		calculatePostTaxAmount(preTaxAmount, finances.hecs) -
-		calculateTotalExpenses(finances.expenses);
+		takeHomeIncome - calculateTotalExpenses(finances.expenses);
 
-	// TODO: FHSS gets taxed at marginal tax rate - 30% when withdrawn
+	// FHSS gets taxed at marginal tax rate - 30% when withdrawn
+	const fhssWithdrawalTaxRate = Math.max(
+		0,
+		getMarginalTaxRate(assessableIncome) - 0.3
+	);
+
+	const fhssAmountInSuper = 0.85 * fhss;
+	const fhssAfterWithdrawal = fhssAmountInSuper * (1 - fhssWithdrawalTaxRate);
 
 	return {
-		cash: round(postExpensesAmount + fhss * 0.85, 2),
+		cash: round(postExpensesAmount + fhssAfterWithdrawal, 2),
 		super: 0.1 * finances.salary,
 	};
+};
+
+export const getAdvantageOfFHSS = (finances: FinancialDetails) => {
+	const { cash: savingsWithFHSS } = calculateAnnualSavings({
+		...finances,
+		schemes: { fhss: true },
+	});
+	const { cash: savingsWithoutFHSS } = calculateAnnualSavings({
+		...finances,
+		schemes: { fhss: false },
+	});
+
+	return savingsWithFHSS - savingsWithoutFHSS;
 };
 
 export const forecastSavings = (finances: FinancialDetails, months: number) => {
@@ -43,6 +71,8 @@ export const calculateTotalExpenses = (expenses?: Expense[]) =>
 
 export const calculatePostTaxAmount = (preTaxAmount: number, hecs = false) => {
 	const hecsPaid = hecs ? calculateHecsRepayment(preTaxAmount) : 0;
+
+	// TODO: Medicare levy is a thing
 
 	return preTaxAmount - hecsPaid - calculateTax(preTaxAmount);
 };
