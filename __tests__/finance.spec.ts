@@ -21,9 +21,9 @@ describe("finance calculation", () => {
 	it("Should calculate tax", () => {
 		expect(calculateTax(15_000)).toEqual(0);
 		expect(calculateTax(18_200)).toEqual(0);
-		expect(calculateTax(20_000)).toEqual(3800);
-		expect(calculateTax(44_000)).toEqual(8360);
-		expect(calculateTax(45_000)).toEqual(8550);
+		expect(calculateTax(20_000)).toEqual(342);
+		expect(calculateTax(44_000)).toEqual(4902);
+		expect(calculateTax(45_000)).toEqual(5092);
 		expect(calculateTax(85_000)).toEqual(18_092);
 		expect(calculateTax(119_000)).toEqual(29_142);
 		expect(calculateTax(124_000)).toEqual(30_947);
@@ -115,22 +115,22 @@ describe("finance calculation", () => {
 
 	it("Should calculate advantage of FHSS", () => {
 		expect(
-			getAdvantageOfFHSS({ salary: 45_000, expenses: defaultExpenses })
+			getAdvantageOfFHSS({ salary: 40_000, expenses: defaultExpenses })
 		).toEqual(600);
 		expect(
 			getAdvantageOfFHSS({ salary: 50_000, expenses: defaultExpenses })
-		).toEqual(-2183);
+		).toEqual(1275);
 		expect(
 			getAdvantageOfFHSS({ salary: 60_000, expenses: defaultExpenses })
-		).toEqual(-833);
+		).toEqual(2625);
 		expect(
 			getAdvantageOfFHSS({ salary: 60_001, expenses: defaultExpenses })
 		).toEqual(2370);
 		expect(
-			getAdvantageOfFHSS({ salary: 65_000, expenses: defaultExpenses })
+			getAdvantageOfFHSS({ salary: 70_000, expenses: defaultExpenses })
 		).toEqual(2370);
 		expect(
-			getAdvantageOfFHSS({ salary: 100_000, expenses: defaultExpenses })
+			getAdvantageOfFHSS({ salary: 80_000, expenses: defaultExpenses })
 		).toEqual(2370);
 		expect(
 			getAdvantageOfFHSS({ salary: 140_000, expenses: defaultExpenses })

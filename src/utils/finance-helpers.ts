@@ -48,7 +48,7 @@ export const calculateTax = (amount: number) => {
 	} else if (amount > 45_000) {
 		return 5092 + 0.325 * (amount - 45_000);
 	} else if (amount > 18_200) {
-		return 0.19 * amount;
+		return 0.19 * (amount - 18_200);
 	} else {
 		return 0;
 	}
