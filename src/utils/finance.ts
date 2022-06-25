@@ -1,9 +1,9 @@
-import { round } from "@utils/gneric";
+import { round } from "@utils/generic";
 import { FinancialDetails } from "@schema/financial-details-schema";
 import { Expense } from "@schema/expense-schema";
 import { calculateHecsRepayment, calculateTax } from "./finance-helpers";
 
-export const calculateSavings = (finances: FinancialDetails) => {
+export const calculateAnnualSavings = (finances: FinancialDetails) => {
 	const fhss = finances.schemes?.fhss ? 15_000 : 0;
 
 	const preTaxAmount = finances.salary + (finances.bonus ?? 0) - fhss;
@@ -18,6 +18,11 @@ export const calculateSavings = (finances: FinancialDetails) => {
 		cash: round(postExpensesAmount + fhss * 0.85, 2),
 		super: 0.1 * finances.salary,
 	};
+};
+
+export const forecastSavings = (finances: FinancialDetails, months: number) => {
+	const monthlySavings = calculateAnnualSavings(finances).cash / 12;
+	return round(monthlySavings * months, 2);
 };
 
 export const calculateTotalExpenses = (expenses?: Expense[]) =>

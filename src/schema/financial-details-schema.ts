@@ -6,6 +6,8 @@ export const financialDetailsSchema = yup.object({
 	bonus: yup.number().positive(),
 	hecs: yup.bool(),
 
+	currentCash: yup.number().positive(),
+
 	expenses: yup.array(expenseSchema),
 	schemes: yup
 		.object({

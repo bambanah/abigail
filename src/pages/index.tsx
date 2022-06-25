@@ -1,8 +1,8 @@
 import Layout from "src/components/layouts/layout";
 import React, { useEffect, useState } from "react";
-import { calculateSavings } from "@utils/finance";
+import { calculateAnnualSavings } from "@utils/finance";
 import FinanceForm from "src/components/organisms/form";
-import { isValidNumber } from "@utils/gneric";
+import { isValidNumber } from "@utils/generic";
 import { FinancialDetails } from "@schema/financial-details-schema";
 
 const numberToDollars = (value: number | undefined) => {
@@ -51,7 +51,7 @@ const DashboardPage = () => {
 
 	useEffect(() => {
 		if (finances !== undefined) {
-			const calculatedSavings = calculateSavings(finances);
+			const calculatedSavings = calculateAnnualSavings(finances);
 
 			setSavings(calculatedSavings?.cash);
 		}

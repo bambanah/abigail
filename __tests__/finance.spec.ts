@@ -2,19 +2,20 @@ import { Expense } from "@schema/expense-schema";
 import { FinancialDetails } from "@schema/financial-details-schema";
 import {
 	calculatePostTaxAmount,
-	calculateSavings,
+	calculateAnnualSavings,
 	calculateTotalExpenses,
+	forecastSavings,
 } from "@utils/finance";
-import { calculateTax } from "@utils/finance-helpers";
-
-const defaultSalary = 100_000;
-
-const defaultExpenses: Expense[] = [
-	{ title: "expense1", amount: 150, cadence: "weekly" },
-	{ title: "expense2", amount: 500, cadence: "fortnightly" },
-];
+import { calculateHecsRepayment, calculateTax } from "@utils/finance-helpers";
 
 describe("finance calculation", () => {
+	const defaultSalary = 100_000;
+
+	const defaultExpenses: Expense[] = [
+		{ title: "expense1", amount: 150, cadence: "weekly" },
+		{ title: "expense2", amount: 500, cadence: "fortnightly" },
+	];
+
 	it("Should calculate tax", () => {
 		expect(calculateTax(15_000)).toEqual(0);
 		expect(calculateTax(18_200)).toEqual(0);
@@ -28,15 +29,38 @@ describe("finance calculation", () => {
 	});
 
 	it("Should calculate hecs repayment", () => {
-		expect(calculateTax(15_000)).toEqual(0);
-		expect(calculateTax(18_200)).toEqual(0);
-		expect(calculateTax(20_000)).toEqual(3800);
-		expect(calculateTax(44_000)).toEqual(8360);
-		expect(calculateTax(45_000)).toEqual(8550);
-		expect(calculateTax(119_000)).toEqual(29_142);
-		expect(calculateTax(124_000)).toEqual(30_947);
-		expect(calculateTax(179_800)).toEqual(51_593);
-		expect(calculateTax(200_000)).toEqual(60_667);
+		expect(calculateHecsRepayment(45_000)).toEqual(0);
+		expect(calculateHecsRepayment(68_000)).toEqual(2380);
+		expect(calculateHecsRepayment(80_000)).toEqual(4000);
+		expect(calculateHecsRepayment(119_000)).toEqual(10_115);
+		expect(calculateHecsRepayment(124_000)).toEqual(11_160);
+		expect(calculateHecsRepayment(179_800)).toEqual(17_980);
+	});
+
+	it("Should forecast savings", () => {
+		const finances: FinancialDetails = {
+			salary: defaultSalary,
+			hecs: false,
+			expenses: defaultExpenses,
+		};
+
+		expect(forecastSavings(finances, 3)).toEqual(14_683.25);
+		expect(forecastSavings(finances, 6)).toEqual(29_366.5);
+		expect(forecastSavings(finances, 12)).toEqual(58_733);
+		expect(forecastSavings(finances, 24)).toEqual(117_466);
+		expect(forecastSavings(finances, 36)).toEqual(176_199);
+
+		const financesWithHecs: FinancialDetails = {
+			salary: defaultSalary,
+			hecs: true,
+			expenses: defaultExpenses,
+		};
+
+		expect(forecastSavings(financesWithHecs, 3)).toEqual(12_933.25);
+		expect(forecastSavings(financesWithHecs, 6)).toEqual(25_866.5);
+		expect(forecastSavings(financesWithHecs, 12)).toEqual(51_733);
+		expect(forecastSavings(financesWithHecs, 24)).toEqual(103_466);
+		expect(forecastSavings(financesWithHecs, 36)).toEqual(155_199);
 	});
 
 	it("Should calculate total expenses", () => {
@@ -64,7 +88,7 @@ describe("finance calculation", () => {
 			expenses: defaultExpenses,
 		};
 
-		const savings = calculateSavings(finances);
+		const savings = calculateAnnualSavings(finances);
 
 		expect(savings.cash).toEqual(58_733);
 		expect(savings.super).toEqual(10_000);
@@ -77,7 +101,7 @@ describe("finance calculation", () => {
 			expenses: defaultExpenses,
 		};
 
-		const savings = calculateSavings(finances);
+		const savings = calculateAnnualSavings(finances);
 
 		expect(savings.cash).toEqual(51_733);
 		expect(savings.super).toEqual(10_000);
@@ -92,7 +116,7 @@ describe("finance calculation", () => {
 			},
 		};
 
-		const savings = calculateSavings(finances);
+		const savings = calculateAnnualSavings(finances);
 
 		expect(savings.cash).toEqual(61_358);
 		expect(savings.super).toEqual(10_000);
@@ -109,7 +133,7 @@ describe("finance calculation", () => {
 			expenses: defaultExpenses,
 		};
 
-		const savings = calculateSavings(finances);
+		const savings = calculateAnnualSavings(finances);
 
 		expect(savings.cash).toEqual(66_983);
 		expect(savings.super).toEqual(10_000);
@@ -126,7 +150,7 @@ describe("finance calculation", () => {
 			expenses: defaultExpenses,
 		};
 
-		const savings = calculateSavings(finances);
+		const savings = calculateAnnualSavings(finances);
 
 		expect(savings.cash).toEqual(62_033);
 		expect(savings.super).toEqual(10_000);
@@ -146,7 +170,7 @@ describe("finance calculation", () => {
 				{ title: "rego", amount: 750, cadence: "annually" },
 			],
 		};
-		const withoutLeaseSavings = calculateSavings(withoutLease);
+		const withoutLeaseSavings = calculateAnnualSavings(withoutLease);
 
 		const withLease = {
 			salary: baseSalary - leaseAnnual,
@@ -154,7 +178,7 @@ describe("finance calculation", () => {
 			desiredFunMoney: 0,
 			bonus: 28_000,
 		};
-		const withLeaseSurplus = calculateSavings(withLease);
+		const withLeaseSurplus = calculateAnnualSavings(withLease);
 
 		// Novated lease costs $164 a year more than running a car
 		expect(
@@ -185,7 +209,7 @@ describe("finance calculation", () => {
 				{ title: "rego", amount: 750, cadence: "annually" },
 			],
 		};
-		const withoutLeaseSavings = calculateSavings(withoutLease);
+		const withoutLeaseSavings = calculateAnnualSavings(withoutLease);
 
 		const withLease: FinancialDetails = {
 			salary: baseSalary - leaseAnnual,
@@ -195,7 +219,7 @@ describe("finance calculation", () => {
 			hecs: true,
 			bonus: 28_000,
 		};
-		const withLeaseSurplus = calculateSavings(withLease);
+		const withLeaseSurplus = calculateAnnualSavings(withLease);
 
 		// Novated lease costs $2,092 a year more than running a car
 		expect(
