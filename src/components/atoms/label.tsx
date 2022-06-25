@@ -1,6 +1,10 @@
 import React from "react";
 
-const Label: React.FC = ({ children }) => {
+interface Props {
+	children: React.ReactNode;
+}
+
+const Label: React.FC<Props> = ({ children }: Props) => {
 	return (
 		<label className="label">
 			<span className="label-text">{children}</span>

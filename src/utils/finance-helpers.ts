@@ -1,35 +1,4 @@
-import { round } from "@utils/helpers";
-import { Finance } from "types/finance";
-
-export const calculateSavings = (finances: Finance) => {
-	const superAmount = 0.1 * finances.salary;
-
-	const fhss = finances.utiliseFHSS ? 15_000 : 0;
-
-	const preTaxAmount = finances.salary + (finances.bonus ?? 0) - fhss;
-
-	const postTaxAmount = calculatePostTaxAmount(preTaxAmount, finances.hecs);
-
-	let postExpensesAmount = postTaxAmount;
-
-	if (finances.monthlyExpenses) {
-		postExpensesAmount =
-			postTaxAmount -
-			Object.values(finances.monthlyExpenses).reduce((a, b) => a + b, 0) * 12;
-	}
-
-	const savings = postExpensesAmount - (finances.desiredFunMoney ?? 0) * 12;
-
-	return { savings: round(savings + fhss * 0.85, 2), super: superAmount };
-};
-
-export const calculatePostTaxAmount = (preTaxAmount: number, hecs = false) => {
-	const hecsPaid = hecs ? calculateHecsAmount(preTaxAmount) : 0;
-
-	return preTaxAmount - hecsPaid - calculateTax(preTaxAmount);
-};
-
-export const calculateHecsAmount = (amount: number) => {
+export const calculateHecsRepayment = (amount: number) => {
 	if (amount > 137_897) {
 		return 0.1 * amount;
 	} else if (amount > 130_092) {

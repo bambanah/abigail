@@ -1,9 +1,9 @@
 import Layout from "src/components/layouts/layout";
 import React, { useEffect, useState } from "react";
-import { calculateSavings } from "src/helpers/finance";
-import { FinanceConstants } from "types/finance";
+import { calculateSavings } from "@utils/finance";
 import FinanceForm from "src/components/organisms/form";
-import { isValidNumber } from "@utils/helpers";
+import { isValidNumber } from "@utils/gneric";
+import { FinancialDetails } from "@schema/financial-details-schema";
 
 const numberToDollars = (value: number | undefined) => {
 	return (
@@ -16,11 +16,10 @@ const numberToDollars = (value: number | undefined) => {
 
 const DashboardPage = () => {
 	const [savings, setSavings] = useState(0);
-	const [finances, setFinances] = useState<FinanceConstants | undefined>();
-	const [idealSavings, setIdealSavings] = useState(0);
+	const [finances, setFinances] = useState<FinancialDetails | undefined>();
 
 	const [initialValues, setInitialValues] = useState<
-		FinanceConstants | undefined
+		FinancialDetails | undefined
 	>();
 
 	const [loaded, setLoaded] = useState(false);
@@ -28,11 +27,10 @@ const DashboardPage = () => {
 	useEffect(() => {
 		const salary = localStorage.getItem("salary");
 		const bonus = localStorage.getItem("bonus");
-		const utiliseFHSS = localStorage.getItem("utiliseFHSS");
 		const hecs = localStorage.getItem("hecs");
 
 		if (salary && isValidNumber(salary)) {
-			const storedFinances: FinanceConstants = {
+			const storedFinances: FinancialDetails = {
 				salary: Number(salary),
 			};
 
@@ -40,7 +38,6 @@ const DashboardPage = () => {
 				storedFinances.bonus = Number(bonus);
 			}
 
-			storedFinances.utiliseFHSS = utiliseFHSS === "true";
 			storedFinances.hecs = hecs === "true";
 
 			setInitialValues(storedFinances);
@@ -56,14 +53,7 @@ const DashboardPage = () => {
 		if (finances !== undefined) {
 			const calculatedSavings = calculateSavings(finances);
 
-			setSavings(calculatedSavings?.savings);
-
-			if (!finances.utiliseFHSS) {
-				finances.utiliseFHSS = true;
-
-				const calculatedIdealSavings = calculateSavings(finances);
-				setIdealSavings(calculatedIdealSavings.savings);
-			}
+			setSavings(calculatedSavings?.cash);
 		}
 	}, [finances]);
 
@@ -92,15 +82,6 @@ const DashboardPage = () => {
 							<h2 className="text-2xl">
 								You could save <b>${numberToDollars(savings)}</b> per year
 							</h2>
-							{idealSavings - savings > 0 && (
-								<p className="mt-5">
-									You could save{" "}
-									<b className="text-green-500">
-										${numberToDollars(idealSavings - savings)}
-									</b>{" "}
-									more per year by utilising the FHSS
-								</p>
-							)}
 						</div>
 					)}
 				</div>

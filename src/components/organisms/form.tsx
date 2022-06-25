@@ -1,13 +1,13 @@
 import Button from "@atoms/button";
 import Checkbox from "@atoms/checkbox";
 import FormField from "@molecules/form-field";
+import { FinancialDetails } from "@schema/financial-details-schema";
 import { Formik, FormikErrors } from "formik";
 import React from "react";
-import { FinanceConstants } from "types/finance";
 
 interface Props {
-	setFinances: (value: FinanceConstants) => void;
-	initialValues?: FinanceConstants;
+	setFinances: (value: FinancialDetails) => void;
+	initialValues?: FinancialDetails;
 }
 
 const FinanceForm = ({ setFinances, initialValues }: Props) => {
@@ -16,11 +16,11 @@ const FinanceForm = ({ setFinances, initialValues }: Props) => {
 			initialValues={{
 				salary: initialValues?.salary.toString() ?? "",
 				bonus: initialValues?.bonus?.toString() ?? "",
-				utilizeFHSS: initialValues?.utiliseFHSS ?? false,
+				utilizeFHSS: initialValues?.schemes?.fhss ?? false,
 				hecs: initialValues?.hecs ?? false,
 			}}
 			validate={(values) => {
-				const errors: FormikErrors<FinanceConstants> = {};
+				const errors: FormikErrors<FinancialDetails> = {};
 
 				if (values.salary.length === 0) errors.salary = "Required";
 				if (values.bonus.length === 0) errors.bonus = "Required";
@@ -28,10 +28,10 @@ const FinanceForm = ({ setFinances, initialValues }: Props) => {
 				return errors;
 			}}
 			onSubmit={(values, { setSubmitting }) => {
-				const finances: FinanceConstants = {
+				const finances: FinancialDetails = {
 					salary: Number(values.salary),
 					bonus: Number(values.bonus),
-					utiliseFHSS: values.utilizeFHSS,
+					schemes: { fhss: values.utilizeFHSS },
 					hecs: values.hecs,
 				};
 
@@ -39,10 +39,6 @@ const FinanceForm = ({ setFinances, initialValues }: Props) => {
 
 				localStorage.setItem("salary", finances.salary.toString());
 				localStorage.setItem("bonus", finances.bonus?.toString() ?? "");
-				localStorage.setItem(
-					"utiliseFHSS",
-					finances.utiliseFHSS ? "true" : "false"
-				);
 				localStorage.setItem("hecs", finances.hecs ? "true" : "false");
 
 				setSubmitting(false);
