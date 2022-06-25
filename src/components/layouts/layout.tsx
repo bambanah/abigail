@@ -1,6 +1,10 @@
-import React, { FC } from "react";
+import React from "react";
 
-const Layout: FC = ({ children }) => {
+interface Props {
+	children: React.ReactNode;
+}
+
+const Layout = ({ children }: Props) => {
 	return <div className="min-w-screen min-h-screen">{children}</div>;
 };
 

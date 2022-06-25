@@ -18,11 +18,12 @@
 		"noImplicitReturns": true,
 		"paths": {
 			"@atoms/*": ["src/components/atoms/*"],
-			"@context/*": ["src/context/*"],
 			"@layouts/*": ["src/components/layouts/*"],
 			"@molecules/*": ["src/components/molecules/*"],
-			"@organisms/*": ["src/organisms/*"],
+			"@organisms/*": ["src/components/organisms/*"],
+			"@context/*": ["src/context/*"],
 			"@pages/*": ["src/pages/*"],
+			"@schema/*": ["src/schema/*"],
 			"@styles/*": ["src/styles/*"],
 			"@utils/*": ["src/utils/*"]
 		},
