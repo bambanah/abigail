@@ -1,12 +1,12 @@
 # Welcome to Abigail
 
-### 💲 The Be-All and End-All of Personal Finance Calculators
+### The Be-All and End-All of Personal Finance Calculators
 
-I got a bit sick of maintaining a massively sprawling spreadsheet for figuring out my personal finance situation, so I decided to create **Abigail**. Abigail is a personal finance tool to give you an extremely in-depth overview into your finances.
+I got a bit sick of maintaining a massively sprawling spreadsheet for figuring out my personal finance situation, so I decided to create **Abigail**. There's quite a few "financial planning" tools/calculators out there, but to be completely honest, they're all extremely ugly and hard to use. I wanted something that actually makes sense for the modern world.
 
 My eventual goal for Abigail is for it to be able to sync with your life, give you an accurate overview of where all your money is going, and most importantly, help you find ways to make the most of it.
 
-It's still in its very early stages, but it's already proving useful to me.
+It's still in its very early stages, but it's got some massive potential.
 
 #### 🚧 Roadmap
 
