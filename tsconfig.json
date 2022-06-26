@@ -18,7 +18,7 @@
 		"noImplicitReturns": true,
 		"paths": {
 			"@atoms/*": ["src/components/atoms/*"],
-			"@layouts/*": ["src/components/layouts/*"],
+			"@templates/*": ["src/components/templates/*"],
 			"@molecules/*": ["src/components/molecules/*"],
 			"@organisms/*": ["src/components/organisms/*"],
 			"@context/*": ["src/context/*"],

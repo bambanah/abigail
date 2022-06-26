@@ -18,3 +18,12 @@ export function round(value: number, exp: number) {
 export const isValidNumber = (value: string) => {
 	return !Number.isNaN(value) && !Number.isNaN(Number.parseFloat(value));
 };
+
+export const formatDollars = (value: number | undefined) => {
+	return (
+		value?.toLocaleString(undefined, {
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 2,
+		}) ?? "N/A"
+	);
+};

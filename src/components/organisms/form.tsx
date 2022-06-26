@@ -37,9 +37,7 @@ const FinanceForm = ({ setFinances, initialValues }: Props) => {
 
 				setFinances(finances);
 
-				localStorage.setItem("salary", finances.salary.toString());
-				localStorage.setItem("bonus", finances.bonus?.toString() ?? "");
-				localStorage.setItem("hecs", finances.hecs ? "true" : "false");
+				localStorage.setItem("financialDetails", JSON.stringify(finances));
 
 				setSubmitting(false);
 			}}
