@@ -20,4 +20,4 @@ It's still in its very early stages, but it's got some massive potential.
   - [ ] Super co-contributions
   - [ ] Fist Home Super Saver scheme (FHSS)
 - [ ] Integrate with your bank to understand how much you actually spend
-- [ ] Use expense data to *accurately* forecase your saving potential over time
+- [ ] Use expense data to _accurately_ forecast your saving potential over time
