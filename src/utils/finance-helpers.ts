@@ -1,3 +1,10 @@
+import { round } from "./generic";
+
+const LEVY_SINGLE_EXEMPTION_THRESHOLD = 23_226;
+const LEVY_SINGLE_REDUCTION_THRESHOLD = 29_033;
+const LEVY_FAMILY_EXEMPTION_THRESHOLD = 39_167;
+const LEVY_FAMILY_REDUCTION_THRESHOLD = 48_958;
+
 export const calculateHecsRepayment = (amount: number) => {
 	if (amount > 137_897) {
 		return 0.1 * amount;
@@ -72,19 +79,35 @@ export const calculateMedicareLevy = (
 		(dependents !== undefined && dependents > 0);
 	const totalIncome = assessableIncome + (partnerIncome ?? 0);
 
-	// Family base threshold increases by 1500 for every child after the first one
-	const familyExemptThreshold = 39_167 + (dependents ? 4496 * dependents : 0);
-	const familyReductionThreshold =
-		48_958 + (dependents ? 4496 * dependents : 0);
+	// TODO: Account for senior/pensioner threshold increase
 
-	// TODO: https://www.ato.gov.au/Individuals/Medicare-and-private-health-insurance/Medicare-levy/Medicare-levy-reduction---family-income/
-	if (totalIncome <= (isFamily ? familyExemptThreshold : 23_226)) {
+	// Family base threshold increases by 4496 for every child
+	const familyThresholdIncrease = dependents ? 4496 * dependents : 0;
+	const familyExemptionThreshold =
+		LEVY_FAMILY_EXEMPTION_THRESHOLD + familyThresholdIncrease;
+	const familyReductionThreshold =
+		LEVY_FAMILY_REDUCTION_THRESHOLD + familyThresholdIncrease;
+
+	if (
+		totalIncome <=
+		(isFamily ? familyExemptionThreshold : LEVY_SINGLE_EXEMPTION_THRESHOLD)
+	) {
 		return 0;
-	} else if (totalIncome <= (isFamily ? familyReductionThreshold : 29_033)) {
-		// TODO: Reduce medicare levy
-		return 0;
+	} else if (
+		totalIncome <=
+		(isFamily ? familyReductionThreshold : LEVY_SINGLE_REDUCTION_THRESHOLD)
+	) {
+		// TODO: These values are an approximation. Find how the actual rates are calculated.
+		const relative = isFamily
+			? (totalIncome - familyExemptionThreshold) /
+			  (familyReductionThreshold - familyExemptionThreshold)
+			: (assessableIncome - LEVY_SINGLE_EXEMPTION_THRESHOLD) /
+			  (LEVY_SINGLE_REDUCTION_THRESHOLD - LEVY_SINGLE_EXEMPTION_THRESHOLD);
+		const rate = 0.02 * relative;
+
+		return round(rate * assessableIncome);
 	} else {
-		return 0.02 * assessableIncome;
+		return round(0.02 * assessableIncome);
 	}
 };
 

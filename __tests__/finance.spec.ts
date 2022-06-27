@@ -10,6 +10,7 @@ import {
 import {
 	calculateHecsRepayment,
 	calculateIncomeTax,
+	calculateMedicareLevy,
 	calculateMedicareLevySurcharge,
 } from "@utils/finance-helpers";
 
@@ -42,6 +43,26 @@ describe("finance calculations", () => {
 		expect(calculateHecsRepayment(119_000)).toEqual(10_115);
 		expect(calculateHecsRepayment(124_000)).toEqual(11_160);
 		expect(calculateHecsRepayment(179_800)).toEqual(17_980);
+	});
+
+	it("Should calculate medicare levy", () => {
+		expect(calculateMedicareLevy(24_000)).toEqual(63.98);
+		expect(calculateMedicareLevy(27_000)).toEqual(350.95);
+		expect(calculateMedicareLevy(30_000)).toEqual(600);
+		expect(calculateMedicareLevy(36_000)).toEqual(720);
+		expect(calculateMedicareLevy(100_000)).toEqual(2000);
+
+		expect(calculateMedicareLevy(24_000, 10_000)).toEqual(0);
+		expect(calculateMedicareLevy(27_000, 15_000)).toEqual(156.25);
+		expect(calculateMedicareLevy(30_000, 17_000)).toEqual(480.01);
+		expect(calculateMedicareLevy(36_000, 36_000)).toEqual(720);
+		expect(calculateMedicareLevy(100_000, 100_000)).toEqual(2000);
+
+		expect(calculateMedicareLevy(24_000, 10_000, 1)).toEqual(0);
+		expect(calculateMedicareLevy(27_000, 15_000, 2)).toEqual(0);
+		expect(calculateMedicareLevy(25_000, 20_000, 2)).toEqual(0);
+		expect(calculateMedicareLevy(38_000, 10_000, 1)).toEqual(336.65);
+		expect(calculateMedicareLevy(100_000, 50_000, 23)).toEqual(1516.7);
 	});
 
 	it("Should calculate medicare levy surcharge", () => {
@@ -149,7 +170,7 @@ describe("finance calculations", () => {
 	it("Should calculate advantage of FHSS", () => {
 		expect(
 			getAdvantageOfFHSS({ salary: 40_000, expenses: defaultExpenses })
-		).toEqual(1400);
+		).toEqual(1247.25);
 		expect(
 			getAdvantageOfFHSS({ salary: 50_000, expenses: defaultExpenses })
 		).toEqual(1575);
