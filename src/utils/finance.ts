@@ -3,8 +3,9 @@ import { FinancialDetails } from "@schema/financial-details-schema";
 import { Expense } from "@schema/expense-schema";
 import {
 	calculateHecsRepayment,
-	calculateTax,
+	calculateIncomeTax,
 	getMarginalTaxRate,
+	calculateMedicareLevySurcharge,
 } from "./finance-helpers";
 
 export const calculateAnnualSavings = (finances: FinancialDetails) => {
@@ -45,34 +46,57 @@ export const getAdvantageOfFHSS = (finances: FinancialDetails) => {
 		schemes: { fhss: false },
 	});
 
-	return savingsWithFHSS - savingsWithoutFHSS;
+	return round(savingsWithFHSS - savingsWithoutFHSS);
 };
 
 export const forecastSavings = (finances: FinancialDetails, months: number) => {
 	const monthlySavings = calculateAnnualSavings(finances).cash / 12;
-	return round(monthlySavings * months, 2);
+	return round(monthlySavings * months);
 };
 
-export const calculateTotalExpenses = (expenses?: Expense[]) =>
-	expenses
-		?.map(({ cadence, amount }) => {
-			switch (cadence) {
-				case "weekly":
-					return amount * 52;
-				case "fortnightly":
-					return amount * 21;
-				case "monthly":
-					return amount * 12;
-				case "annually":
-					return amount;
-			}
-		})
-		.reduce((a, b) => a + b, 0) ?? 0;
+export const calculateTotalExpenses = (expenses?: Expense[]) => {
+	if (expenses !== undefined) {
+		const totalExpenses = expenses
+			?.map(({ cadence, amount }) => {
+				switch (cadence) {
+					case "weekly":
+						return amount * 52;
+					case "fortnightly":
+						return amount * 21;
+					case "monthly":
+						return amount * 12;
+					case "annually":
+						return amount;
+				}
+			})
+			.reduce((a, b) => a + b, 0);
 
-export const calculatePostTaxAmount = (preTaxAmount: number, hecs = false) => {
-	const hecsPaid = hecs ? calculateHecsRepayment(preTaxAmount) : 0;
+		return round(totalExpenses);
+	} else {
+		return 0;
+	}
+};
 
-	// TODO: Medicare levy is a thing
+export const calculatePostTaxAmount = (
+	assessableIncome: number,
+	hecs = false,
+	medicareLevySurchargeExempt = false,
+	medicareLevyExempt = false
+) => {
+	const hecsPaid = hecs ? calculateHecsRepayment(assessableIncome) : 0;
 
-	return preTaxAmount - hecsPaid - calculateTax(preTaxAmount);
+	const incomeTax = calculateIncomeTax(assessableIncome);
+
+	const medicareLevy = medicareLevyExempt ? 0 : 0.02 * assessableIncome;
+	const medicareLevySurcharge = medicareLevySurchargeExempt
+		? 0
+		: calculateMedicareLevySurcharge(assessableIncome);
+
+	return round(
+		assessableIncome -
+			hecsPaid -
+			incomeTax -
+			medicareLevy -
+			medicareLevySurcharge
+	);
 };

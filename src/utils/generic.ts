@@ -1,8 +1,7 @@
-export function round(value: number, exp: number) {
+export function round(value: number, exp = 2) {
 	if (typeof exp === "undefined" || +exp === 0) return Math.round(value);
 
-	if (Number.isNaN(value) || !(typeof exp === "number" && exp % 1 === 0))
-		return Number.NaN;
+	if (Number.isNaN(value) || exp % 1 !== 0) return Number.NaN;
 
 	// Shift
 	let valueArray = value.toString().split("e");

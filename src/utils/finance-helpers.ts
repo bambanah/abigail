@@ -40,7 +40,7 @@ export const calculateHecsRepayment = (amount: number) => {
 	}
 };
 
-export const calculateTax = (amount: number) => {
+export const calculateIncomeTax = (amount: number) => {
 	if (amount > 180_000) {
 		return 51_667 + 0.45 * (amount - 180_000);
 	} else if (amount > 120_000) {
@@ -60,4 +60,35 @@ export const getMarginalTaxRate = (amount: number) => {
 	else if (amount > 45_000) return 0.32;
 	else if (amount > 18_200) return 0.19;
 	else return 0;
+};
+
+export const calculateMedicareLevySurcharge = (
+	assessableIncome: number,
+	partnerIncome?: number,
+	dependents?: number
+) => {
+	const isFamily =
+		(partnerIncome !== undefined && partnerIncome > 0) ||
+		(dependents !== undefined && dependents > 0);
+	const totalIncome = assessableIncome + (partnerIncome ?? 0);
+
+	// Family base threshold increases by 1500 for every child after the first one
+	const familyBaseThreshold =
+		180_000 + (dependents ? 1500 * Math.max(dependents - 1, 0) : 0);
+
+	if (
+		isFamily &&
+		totalIncome > familyBaseThreshold &&
+		assessableIncome < 23_226
+	) {
+		return 0;
+	} else if (totalIncome <= (isFamily ? familyBaseThreshold : 90_000)) {
+		return 0;
+	} else if (totalIncome <= (isFamily ? 210_000 : 105_000)) {
+		return assessableIncome * 0.01;
+	} else if (totalIncome <= (isFamily ? 280_000 : 140_000)) {
+		return assessableIncome * 0.0125;
+	} else {
+		return assessableIncome * 0.015;
+	}
 };
