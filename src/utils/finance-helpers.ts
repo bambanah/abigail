@@ -62,6 +62,32 @@ export const getMarginalTaxRate = (amount: number) => {
 	else return 0;
 };
 
+export const calculateMedicareLevy = (
+	assessableIncome: number,
+	partnerIncome?: number,
+	dependents?: number
+) => {
+	const isFamily =
+		(partnerIncome !== undefined && partnerIncome > 0) ||
+		(dependents !== undefined && dependents > 0);
+	const totalIncome = assessableIncome + (partnerIncome ?? 0);
+
+	// Family base threshold increases by 1500 for every child after the first one
+	const familyExemptThreshold = 39_167 + (dependents ? 4496 * dependents : 0);
+	const familyReductionThreshold =
+		48_958 + (dependents ? 4496 * dependents : 0);
+
+	// TODO: https://www.ato.gov.au/Individuals/Medicare-and-private-health-insurance/Medicare-levy/Medicare-levy-reduction---family-income/
+	if (totalIncome <= (isFamily ? familyExemptThreshold : 23_226)) {
+		return 0;
+	} else if (totalIncome <= (isFamily ? familyReductionThreshold : 29_033)) {
+		// TODO: Reduce medicare levy
+		return 0;
+	} else {
+		return 0.02 * assessableIncome;
+	}
+};
+
 export const calculateMedicareLevySurcharge = (
 	assessableIncome: number,
 	partnerIncome?: number,

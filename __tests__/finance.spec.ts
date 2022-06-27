@@ -149,7 +149,7 @@ describe("finance calculations", () => {
 	it("Should calculate advantage of FHSS", () => {
 		expect(
 			getAdvantageOfFHSS({ salary: 40_000, expenses: defaultExpenses })
-		).toEqual(900);
+		).toEqual(1400);
 		expect(
 			getAdvantageOfFHSS({ salary: 50_000, expenses: defaultExpenses })
 		).toEqual(1575);

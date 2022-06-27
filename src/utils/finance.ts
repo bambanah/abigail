@@ -6,6 +6,7 @@ import {
 	calculateIncomeTax,
 	getMarginalTaxRate,
 	calculateMedicareLevySurcharge,
+	calculateMedicareLevy,
 } from "./finance-helpers";
 
 export const calculateAnnualSavings = (finances: FinancialDetails) => {
@@ -87,7 +88,9 @@ export const calculatePostTaxAmount = (
 
 	const incomeTax = calculateIncomeTax(assessableIncome);
 
-	const medicareLevy = medicareLevyExempt ? 0 : 0.02 * assessableIncome;
+	const medicareLevy = medicareLevyExempt
+		? 0
+		: calculateMedicareLevy(assessableIncome);
 	const medicareLevySurcharge = medicareLevySurchargeExempt
 		? 0
 		: calculateMedicareLevySurcharge(assessableIncome);
