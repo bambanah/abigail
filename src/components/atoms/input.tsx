@@ -6,7 +6,7 @@ const Input: FC<InputHTMLAttributes<HTMLInputElement>> = ({
 }) => {
 	return (
 		<input
-			className={`${className} font-sans border-2 shadow-lg rounded-md p-2`}
+			className={`input input-bordered w-full max-w-xs ${className}`}
 			{...rest}
 		/>
 	);

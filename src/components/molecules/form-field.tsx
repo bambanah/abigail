@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Label from "src/components/atoms/label";
 import React, { ChangeEvent } from "react";
+import Input from "@atoms/input";
+import ErrorMessage from "@atoms/error";
 
 interface Props {
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -28,23 +30,21 @@ const FormField: React.FC<Props> = ({
 }) => {
 	return (
 		<div className="form-control">
-			<Label>
+			<Label htmlFor={name}>
 				{label}
 				{required && <span className="text-red-500"> *</span>}
 			</Label>
-			<input
+			<Input
 				placeholder={placeholder ?? label}
 				id={name}
 				name={name}
 				onChange={onChange}
 				value={value}
-				className={`input input-bordered w-full max-w-xs${
-					error ? " input-error" : ""
-				}`}
+				className={error ? "input-error" : ""}
 				onBlur={onBlur}
 				required={required}
 			/>
-			<span className="text-red-400">{error}</span>
+			<ErrorMessage>{error}</ErrorMessage>
 		</div>
 	);
 };
