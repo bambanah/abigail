@@ -11,6 +11,7 @@ It's still in its very early stages, but it's got some massive potential.
 ## 🚧 Roadmap
 
 - [x] Calculate your actual take home pay based on your salary
+- [ ] Support for shift workers with less predictable income
 - [ ] Forecast your super contributions (coming soon)
 - [ ] Add expenses to forecast your saving potential over time (coming soon)
   - [ ] Tag expenses as **essential** or **non-essential**
