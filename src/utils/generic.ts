@@ -19,10 +19,10 @@ export const isValidNumber = (value: string) => {
 };
 
 export const formatDollars = (value: number | undefined) => {
-	return (
+	return `$${
 		value?.toLocaleString(undefined, {
 			minimumFractionDigits: 0,
 			maximumFractionDigits: 2,
 		}) ?? "N/A"
-	);
+	}`;
 };

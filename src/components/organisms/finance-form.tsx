@@ -5,13 +5,14 @@ import {
 	FinancialDetails,
 	financialDetailsSchema,
 } from "@schema/financial-details-schema";
-import { financeAtom } from "@state/finance-atom";
+import { financeAtom, isEditingFinanceAtom } from "@state/finance-atom";
 import { isValidNumber } from "@utils/generic";
 import { Formik } from "formik";
 import { useAtom } from "jotai";
 
 const FinanceForm = () => {
 	const [initialFinances, setFinances] = useAtom(financeAtom);
+	const [, setIsEditingFinance] = useAtom(isEditingFinanceAtom);
 
 	return (
 		<Formik
@@ -33,6 +34,8 @@ const FinanceForm = () => {
 				setFinances(finances);
 
 				setSubmitting(false);
+
+				setIsEditingFinance(false);
 			}}
 			enableReinitialize
 		>
@@ -47,9 +50,9 @@ const FinanceForm = () => {
 			}) => (
 				<form
 					onSubmit={handleSubmit}
-					className="flex flex-col gap-5 items-center shadow-xl p-5 rounded-md py-10"
+					className="flex flex-col gap-5 items-center shadow-2xl p-5 rounded-md"
 				>
-					<h2 className="text-2xl font-bold">Set Constants</h2>
+					<h2 className="text-2xl font-bold">Update Finances</h2>
 					<div className="flex gap-3 justify-between w-full">
 						<FormField
 							label="Salary"
@@ -89,13 +92,23 @@ const FinanceForm = () => {
 						/>
 					</div>
 
-					<Button
-						type="submit"
-						disabled={isSubmitting}
-						className="mt-5 btn-primary"
-					>
-						Save
-					</Button>
+					<div className="flex gap-5">
+						<Button
+							type="submit"
+							disabled={isSubmitting}
+							className="mt-5 btn-primary"
+						>
+							Save
+						</Button>
+						<Button
+							type="button"
+							disabled={isSubmitting}
+							className="mt-5 btn-ghost"
+							onClick={() => setIsEditingFinance(false)}
+						>
+							Cancel
+						</Button>
+					</div>
 				</form>
 			)}
 		</Formik>
