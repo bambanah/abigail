@@ -8,6 +8,7 @@ function App({ Component, pageProps }: AppProps) {
 		<IsBrowser>
 			<Head>
 				<title>Abigail</title>
+				<link rel="shortcut icon" type="image/png" href="/favicon.png" />
 			</Head>
 
 			<Component {...pageProps} />
