@@ -7,7 +7,9 @@ function App({ Component, pageProps }: AppProps) {
 	return (
 		<IsBrowser>
 			<Head>
-				<title>Abigail</title>
+				<title>
+					{process.env.NODE_ENV === "development" ? "</> " : ""}Abigail
+				</title>
 				<link rel="shortcut icon" type="image/png" href="/favicon.png" />
 			</Head>
 
