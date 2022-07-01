@@ -35,10 +35,12 @@ It's still in its very early stages, but it's got some massive potential.
 ### Implemented
 * [Next.js](https://github.com/vercel/next.js)
 
+### Coming Soon
+* [recharts](https://github.com/recharts/recharts)
+* [next-themes](https://github.com/pacocoursey/next-themes)
+
 ### Planned
 * [tRPC](https://github.com/trpc/trpc)
-* [next-themes](https://github.com/pacocoursey/next-themes)
+* [next-auth](https://github.com/nextauthjs/next-auth)
 * [Prisma](https://github.com/prisma/prisma)
 * [Supabase](https://supabase.com/) (PostgreSQL)
-* [twin.macro](https://github.com/ben-rogerson/twin.macro)
-* [next-auth](https://github.com/nextauthjs/next-auth)
