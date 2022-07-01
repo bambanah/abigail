@@ -1,12 +1,9 @@
-import * as yup from "yup";
+import { z } from "zod";
 
-export const expenseSchema = yup.object({
-	title: yup.string().required(),
-	amount: yup.number().positive().required(),
-	cadence: yup
-		.string()
-		.oneOf(["weekly", "fortnightly", "monthly", "annually"] as const)
-		.required(),
+export const expenseSchema = z.object({
+	title: z.string(),
+	amount: z.number().positive(),
+	cadence: z.enum(["weekly", "fortnightly", "monthly", "annually"]),
 });
 
-export type Expense = yup.InferType<typeof expenseSchema>;
+export type Expense = z.infer<typeof expenseSchema>;
