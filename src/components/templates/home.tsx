@@ -9,12 +9,14 @@ const Home = () => {
 	const [editingFinances] = useAtom(isEditingFinanceAtom);
 
 	return (
-		<div className=" max-w-lg flex flex-col gap-8 items-center mt-20">
+		<div className="max-w-lg flex flex-col gap-8 items-center mt-20">
 			<Display variant="primary" className="text-center">
 				Abigail
 			</Display>
 
-			{editingFinances ? <FinanceForm /> : <FinanceSummary />}
+			<div className="shadow-2xl p-5 rounded-lg">
+				{editingFinances ? <FinanceForm /> : <FinanceSummary />}
+			</div>
 
 			<Summary />
 		</div>

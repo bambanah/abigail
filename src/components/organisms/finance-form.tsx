@@ -51,7 +51,7 @@ const FinanceForm = () => {
 			}) => (
 				<form
 					onSubmit={handleSubmit}
-					className="flex flex-col gap-5 items-center shadow-2xl p-5 rounded-md"
+					className="flex flex-col gap-5 items-center "
 				>
 					<Heading level="3">Update Finances</Heading>
 					<div className="flex gap-3 justify-between w-full">
