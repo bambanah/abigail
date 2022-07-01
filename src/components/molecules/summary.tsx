@@ -1,13 +1,25 @@
-import { FinancialDetails } from "@schema/financial-details-schema";
+import { calculateAnnualSavings } from "@utils/finance";
 import { formatDollars } from "@utils/generic";
-import React from "react";
+import { useAtom } from "jotai";
+import { useEffect, useState } from "react";
+import { financeAtom } from "@state/finance-atom";
 
-interface Props {
-	finances: FinancialDetails;
-	savings: number;
-}
+const Summary = () => {
+	const [finances] = useAtom(financeAtom);
+	const [savings, setSavings] = useState(0);
 
-const Summary = ({ finances, savings }: Props) => {
+	useEffect(() => {
+		if (finances !== undefined) {
+			const calculatedSavings = calculateAnnualSavings(finances);
+
+			setSavings(calculatedSavings?.cash);
+		}
+	}, [finances]);
+
+	if (!finances) {
+		return <></>;
+	}
+
 	return (
 		<div className="text-center mt-10">
 			<p>

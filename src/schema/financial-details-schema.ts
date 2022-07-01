@@ -1,19 +1,31 @@
-import { z } from "zod";
+import * as yup from "yup";
 import { expenseSchema } from "./expense-schema";
 
-export const financialDetailsSchema = z.object({
-	salary: z.number().positive(),
-	bonus: z.number().positive().optional(),
-	hecs: z.boolean().optional(),
+export const financialDetailsSchema = yup.object({
+	salary: yup
+		.number()
+		.typeError("Must be a number")
+		.min(0, "Can't be less than zero")
+		.required(),
+	bonus: yup
+		.number()
+		.typeError("Must be a number")
+		.min(0, "Can't be less than zero")
+		.optional(),
+	hecs: yup.boolean().optional(),
 
-	currentCash: z.number().positive().optional(),
+	currentCash: yup
+		.number()
+		.typeError("Must be a number")
+		.min(0, "Can't be less than zero")
+		.optional(),
 
-	expenses: z.array(expenseSchema).optional(),
-	schemes: z
+	expenses: yup.array(expenseSchema).optional(),
+	schemes: yup
 		.object({
-			fhss: z.boolean(),
+			fhss: yup.boolean(),
 		})
 		.optional(),
 });
 
-export type FinancialDetails = z.infer<typeof financialDetailsSchema>;
+export type FinancialDetails = yup.InferType<typeof financialDetailsSchema>;

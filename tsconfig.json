@@ -24,6 +24,7 @@
 			"@context/*": ["src/context/*"],
 			"@pages/*": ["src/pages/*"],
 			"@schema/*": ["src/schema/*"],
+			"@state/*": ["src/state/*"],
 			"@styles/*": ["src/styles/*"],
 			"@utils/*": ["src/utils/*"]
 		},
