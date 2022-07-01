@@ -11,18 +11,24 @@ It's still in its very early stages, but it's got some massive potential.
 ## 🚧 Roadmap
 
 - [x] Calculate your actual take home pay based on your salary
-- [ ] Forecast your super contributions
+- [ ] Forecast your super contributions (coming soon)
+- [ ] Add expenses to forecast your saving potential over time (coming soon)
+  - [ ] Tag expenses as **essential** or **non-essential**
+  - [ ] Categorise expenses for improved insight
 - [ ] Weigh up the benefit of various salary sacrifice options
-  - [ ] Concession super contributions
+  - [ ] Concessional super contributions
   - [ ] Novated lease
   - [ ] Mobile phone
 - [ ] See the impact of various government saving schemes on short and long-term goals
   - [ ] Super co-contributions
-  - [ ] Fist Home Super Saver scheme (FHSS)
-- [ ] Integrate with your bank to understand how much you actually spend
-  - [ ] [Up](https://developer.up.com.au/)
-  - [ ] [CommBank](https://www.commbank.com.au/Developer/) (future)
-- [ ] Use expense data to _accurately_ forecast your saving potential over time
+  - [ ] Fist Home Super Saver scheme (FHSS) (coming soon)
+- [ ] Integrate with your bank to populate expenses with _actual_ data
+  - [ ] [Up](https://developer.up.com.au/) (coming soon)
+  - [ ] [CommBank](https://www.commbank.com.au/Developer/)
+- [ ] Support for non-standard "Flows" (standard flow being an Australian citizen working full-time)
+  - [ ] Non-Australian citizens living in Australia
+  - [ ] Countries outside of Australia
+  - [ ] User-defined Flows for very complex/personalised revenue streams
 
 ## 🚀 Stack
 
