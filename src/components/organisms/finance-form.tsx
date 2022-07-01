@@ -1,5 +1,6 @@
 import Button from "@atoms/button";
 import Checkbox from "@atoms/checkbox";
+import Heading from "@atoms/heading";
 import FormField from "@molecules/form-field";
 import {
 	FinancialDetails,
@@ -52,7 +53,7 @@ const FinanceForm = () => {
 					onSubmit={handleSubmit}
 					className="flex flex-col gap-5 items-center shadow-2xl p-5 rounded-md"
 				>
-					<h2 className="text-2xl font-bold">Update Finances</h2>
+					<Heading level="3">Update Finances</Heading>
 					<div className="flex gap-3 justify-between w-full">
 						<FormField
 							label="Salary"

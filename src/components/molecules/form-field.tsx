@@ -30,7 +30,7 @@ const FormField: React.FC<Props> = ({
 }) => {
 	return (
 		<div className="form-control">
-			<Label htmlFor={name}>
+			<Label htmlFor={name} className="font-bold">
 				{label}
 				{required && <span className="text-red-500"> *</span>}
 			</Label>

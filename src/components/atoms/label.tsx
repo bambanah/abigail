@@ -4,9 +4,9 @@ interface Props extends React.LabelHTMLAttributes<HTMLLabelElement> {
 	children: React.ReactNode;
 }
 
-const Label: React.FC<Props> = ({ children, ...rest }: Props) => {
+const Label: React.FC<Props> = ({ children, className, ...rest }: Props) => {
 	return (
-		<label className="label" {...rest}>
+		<label className={`label ${className}`} {...rest}>
 			<span className="label-text">{children}</span>
 		</label>
 	);
