@@ -7,17 +7,40 @@ import {
 	getMarginalTaxRate,
 	calculateMedicareLevySurcharge,
 	calculateMedicareLevy,
+	calculateEmployerSuperContribution,
 } from "./finance-helpers";
-import { MIN_EMPLOYER_SUPER_RATE } from "./constants";
 
-export const calculateEmployerSuperContribution = (
-	assessableIncome: number,
-	rate = MIN_EMPLOYER_SUPER_RATE
+interface FinancialBreakdown {
+	financialDetails: FinancialDetails;
+	assessableIncome?: number;
+	takeHomeIncome?: number;
+
+	super?: {
+		employerCont?: number;
+		concessionalCont?: number;
+		nonConcessionalCont?: number;
+	};
+
+	deductions?: {
+		incomeTax?: number;
+		medicareLevy?: number;
+		medicareLevySurcharge?: number;
+		hecs?: number;
+	};
+
+	totalExpenses?: number;
+}
+
+export const estimateSavings = (
+	finances: FinancialDetails,
+	years = 1,
+	appreciateSuper: boolean | number = true,
+	withdrawFhss = true
 ) => {
-	return assessableIncome * rate;
-};
+	const fullBreakdown: FinancialBreakdown = {
+		financialDetails: finances,
+	};
 
-export const calculateAnnualSavings = (finances: FinancialDetails) => {
 	const fhss = finances.schemes?.fhss ? 15_000 : 0;
 
 	const assessableIncome = finances.salary + (finances.bonus ?? 0) - fhss;
@@ -36,22 +59,26 @@ export const calculateAnnualSavings = (finances: FinancialDetails) => {
 		getMarginalTaxRate(assessableIncome) - 0.3
 	);
 
-	const fhssAmountInSuper = 0.85 * fhss;
+	const fhssAmountInSuper = 0.85 * fhss * years;
 	const fhssAfterWithdrawal = fhssAmountInSuper * (1 - fhssWithdrawalTaxRate);
 
+	fullBreakdown.super = {
+		employerCont: calculateEmployerSuperContribution(assessableIncome),
+	};
+
 	return {
-		cash: round(postExpensesAmount + fhssAfterWithdrawal, 2),
-		super: calculateEmployerSuperContribution(assessableIncome),
+		estimatedEndTotal: round(postExpensesAmount + fhssAfterWithdrawal, 2),
+		breakdown: fullBreakdown,
 	};
 };
 
 export const getAdvantageOfFHSS = (finances: FinancialDetails) => {
-	const { cash: savingsWithFHSS } = calculateAnnualSavings({
+	const { estimatedEndTotal: savingsWithFHSS } = estimateSavings({
 		...finances,
 		schemes: { fhss: true },
 	});
 
-	const { cash: savingsWithoutFHSS } = calculateAnnualSavings({
+	const { estimatedEndTotal: savingsWithoutFHSS } = estimateSavings({
 		...finances,
 		schemes: { fhss: false },
 	});
@@ -60,7 +87,7 @@ export const getAdvantageOfFHSS = (finances: FinancialDetails) => {
 };
 
 export const forecastSavings = (finances: FinancialDetails, months: number) => {
-	const monthlySavings = calculateAnnualSavings(finances).cash / 12;
+	const monthlySavings = estimateSavings(finances).estimatedEndTotal / 12;
 	return round(monthlySavings * months);
 };
 
@@ -75,6 +102,8 @@ export const calculateTotalExpenses = (expenses?: Expense[]) => {
 						return amount * 21;
 					case "monthly":
 						return amount * 12;
+					case "quarterly":
+						return amount * 4;
 					case "annually":
 						return amount;
 				}

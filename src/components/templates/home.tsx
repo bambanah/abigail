@@ -15,9 +15,7 @@ const Home = () => {
 				Abigail
 			</Display>
 
-			<div className="shadow-2xl p-5 rounded-lg">
-				{editingFinances ? <FinanceForm /> : <FinanceSummary />}
-			</div>
+			{editingFinances ? <FinanceForm /> : <FinanceSummary />}
 
 			<Summary />
 

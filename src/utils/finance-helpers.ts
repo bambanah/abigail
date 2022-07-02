@@ -1,8 +1,10 @@
+import { Expense } from "@schema/expense-schema";
 import {
 	LEVY_FAMILY_EXEMPTION_THRESHOLD,
 	LEVY_FAMILY_REDUCTION_THRESHOLD,
 	LEVY_SINGLE_EXEMPTION_THRESHOLD,
 	LEVY_SINGLE_REDUCTION_THRESHOLD,
+	MIN_EMPLOYER_SUPER_RATE,
 } from "./constants";
 import { round } from "./generic";
 
@@ -45,6 +47,30 @@ export const calculateHecsRepayment = (amount: number) => {
 		return 0.01 * amount;
 	} else {
 		return 0;
+	}
+};
+
+export const calculateEmployerSuperContribution = (
+	assessableIncome: number,
+	rate = MIN_EMPLOYER_SUPER_RATE
+) => {
+	return assessableIncome * rate;
+};
+
+export const calculateAnnualExpenseAmount = (expense: Expense) => {
+	const { amount, cadence } = expense;
+
+	switch (cadence) {
+		case "weekly":
+			return amount * 52;
+		case "fortnightly":
+			return amount * 26;
+		case "monthly":
+			return amount * 12;
+		case "quarterly":
+			return amount * 4;
+		case "annually":
+			return amount;
 	}
 };
 

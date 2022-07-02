@@ -2,7 +2,7 @@ import { Expense } from "@schema/expense-schema";
 import { FinancialDetails } from "@schema/financial-details-schema";
 import {
 	calculatePostTaxAmount,
-	calculateAnnualSavings,
+	estimateSavings,
 	calculateTotalExpenses,
 	forecastSavings,
 	getAdvantageOfFHSS,
@@ -146,10 +146,10 @@ describe("finance calculations", () => {
 			expenses: defaultExpenses,
 		};
 
-		const savings = calculateAnnualSavings(finances);
+		const savings = estimateSavings(finances);
 
-		expect(savings.cash).toEqual(55_733);
-		expect(savings.super).toEqual(10_000);
+		expect(savings.estimatedEndTotal).toEqual(55_733);
+		expect(savings.breakdown.super?.employerCont).toEqual(10_000);
 	});
 
 	it("Should calculate savings with FHSS", () => {
@@ -161,10 +161,10 @@ describe("finance calculations", () => {
 			},
 		};
 
-		const savings = calculateAnnualSavings(finances);
+		const savings = estimateSavings(finances);
 
-		expect(savings.cash).toEqual(59_403);
-		expect(savings.super).toEqual(8500);
+		expect(savings.estimatedEndTotal).toEqual(59_403);
+		expect(savings.breakdown.super?.employerCont).toEqual(8500);
 	});
 
 	it("Should calculate advantage of FHSS", () => {
@@ -198,10 +198,10 @@ describe("finance calculations", () => {
 			expenses: defaultExpenses,
 		};
 
-		const savings = calculateAnnualSavings(finances);
+		const savings = estimateSavings(finances);
 
-		expect(savings.cash).toEqual(48_733);
-		expect(savings.super).toEqual(10_000);
+		expect(savings.estimatedEndTotal).toEqual(48_733);
+		expect(savings.breakdown.super?.employerCont).toEqual(10_000);
 	});
 
 	it("Should calculate savings with expenses, hecs, bonus, and fhss", () => {
@@ -215,10 +215,10 @@ describe("finance calculations", () => {
 			expenses: defaultExpenses,
 		};
 
-		const savings = calculateAnnualSavings(finances);
+		const savings = estimateSavings(finances);
 
-		expect(savings.cash).toEqual(63_578);
-		expect(savings.super).toEqual(10_500);
+		expect(savings.estimatedEndTotal).toEqual(63_578);
+		expect(savings.breakdown.super?.employerCont).toEqual(10_500);
 	});
 
 	it("Should calculate savings with expenses, hecs, bonus, and no fhss", () => {
@@ -232,10 +232,10 @@ describe("finance calculations", () => {
 			expenses: defaultExpenses,
 		};
 
-		const savings = calculateAnnualSavings(finances);
+		const savings = estimateSavings(finances);
 
-		expect(savings.cash).toEqual(58_133);
-		expect(savings.super).toEqual(12_000);
+		expect(savings.estimatedEndTotal).toEqual(58_133);
+		expect(savings.breakdown.super?.employerCont).toEqual(12_000);
 	});
 
 	it("Should calculate advantage of novated lease vs Alex", () => {
@@ -252,7 +252,7 @@ describe("finance calculations", () => {
 				{ title: "rego", amount: 750, cadence: "annually" },
 			],
 		};
-		const withoutLeaseSavings = calculateAnnualSavings(withoutLease);
+		const withoutLeaseSavings = estimateSavings(withoutLease);
 
 		const withLease = {
 			salary: baseSalary - leaseAnnual,
@@ -260,11 +260,14 @@ describe("finance calculations", () => {
 			desiredFunMoney: 0,
 			bonus: 28_000,
 		};
-		const withLeaseSurplus = calculateAnnualSavings(withLease);
+		const withLeaseSurplus = estimateSavings(withLease);
 
 		// Novated lease costs $164 a year more than running a car
 		expect(
-			Math.floor(withoutLeaseSavings.cash - withLeaseSurplus.cash)
+			Math.floor(
+				withoutLeaseSavings.estimatedEndTotal -
+					withLeaseSurplus.estimatedEndTotal
+			)
 		).toEqual(-56);
 
 		const carValue = 59_111;
@@ -291,7 +294,7 @@ describe("finance calculations", () => {
 				{ title: "rego", amount: 750, cadence: "annually" },
 			],
 		};
-		const withoutLeaseSavings = calculateAnnualSavings(withoutLease);
+		const withoutLeaseSavings = estimateSavings(withoutLease);
 
 		const withLease: FinancialDetails = {
 			salary: baseSalary - leaseAnnual,
@@ -301,11 +304,14 @@ describe("finance calculations", () => {
 			hecs: true,
 			bonus: 28_000,
 		};
-		const withLeaseSurplus = calculateAnnualSavings(withLease);
+		const withLeaseSurplus = estimateSavings(withLease);
 
 		// Novated lease costs $2,092 a year more than running a car
 		expect(
-			Math.floor(withoutLeaseSavings.cash - withLeaseSurplus.cash)
+			Math.floor(
+				withoutLeaseSavings.estimatedEndTotal -
+					withLeaseSurplus.estimatedEndTotal
+			)
 		).toEqual(1356);
 
 		const carValue = 59_111;

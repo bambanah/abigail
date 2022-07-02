@@ -10,7 +10,7 @@ const FinanceSummary = () => {
 	const [finances] = useAtom(financeAtom);
 
 	return (
-		<div className="gap-5 flex flex-col w-64">
+		<div className="gap-5 flex flex-col w-64 shadow-md p-5 rounded-lg">
 			<div className="flex items-center gap-1 justify-center relative">
 				<Heading level={3}>Your Finances</Heading>
 				{!editingFinances && (

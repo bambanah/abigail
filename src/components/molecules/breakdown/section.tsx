@@ -18,7 +18,7 @@ const Section: React.FC<SectionProps> = ({
 
 	return (
 		<div className={className} {...rest}>
-			<p className="flex justify-between">
+			<span className="flex justify-between">
 				<Heading level="5">{label}</Heading>
 				<CurrencyText
 					value={total}
@@ -26,7 +26,7 @@ const Section: React.FC<SectionProps> = ({
 					includeSign={neutral ? false : true}
 					className="font-bold"
 				/>
-			</p>
+			</span>
 			<hr />
 			<div className="flex flex-col gap-4 my-4">{children}</div>
 		</div>

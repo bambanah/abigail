@@ -8,8 +8,9 @@ import {
 } from "@schema/financial-details-schema";
 import { financeAtom, isEditingFinanceAtom } from "@state/finance-atom";
 import { isValidNumber } from "@utils/generic";
-import { Formik } from "formik";
+import { Field, FieldArray, Formik, getIn } from "formik";
 import { useAtom } from "jotai";
+import { FaTimes } from "react-icons/fa";
 
 const FinanceForm = () => {
 	const [initialFinances, setFinances] = useAtom(financeAtom);
@@ -21,7 +22,8 @@ const FinanceForm = () => {
 				salary: initialFinances?.salary.toString() ?? "",
 				bonus: initialFinances?.bonus?.toString() ?? "",
 				utilizeFHSS: initialFinances?.schemes?.fhss ?? false,
-				hecs: initialFinances?.hecs ?? false,
+				hecs: initialFinances.hecs ?? false,
+				expenses: initialFinances.expenses ?? [],
 			}}
 			validationSchema={financialDetailsSchema}
 			onSubmit={(values, { setSubmitting }) => {
@@ -30,6 +32,11 @@ const FinanceForm = () => {
 					bonus: isValidNumber(values.bonus) ? Number(values.bonus) : 0,
 					schemes: { fhss: values.utilizeFHSS },
 					hecs: values.hecs,
+					expenses: values.expenses.map(({ title, amount, cadence }) => ({
+						title,
+						amount: Number(amount),
+						cadence,
+					})),
 				};
 
 				setFinances(finances);
@@ -51,9 +58,15 @@ const FinanceForm = () => {
 			}) => (
 				<form
 					onSubmit={handleSubmit}
-					className="flex flex-col gap-5 items-center max-w-96"
+					className="flex flex-col gap-5 items-center max-w-96 shadow-xl p-5 rounded-lg"
 				>
 					<Heading level="3">Your Finances</Heading>
+
+					<div className="flex gap-3 flex-col w-full">
+						<Heading level="4">Income</Heading>
+						<hr className="w-full" />
+					</div>
+
 					<div className="flex gap-3 justify-between w-full">
 						<FormField
 							label="Salary"
@@ -92,6 +105,127 @@ const FinanceForm = () => {
 							className="basis-1/2"
 						/>
 					</div>
+
+					<FieldArray
+						name="expenses"
+						render={(arrayHelpers) => (
+							<div className="flex flex-col gap-3 justify-between w-full">
+								<Heading level="4">Expenses</Heading>
+								<hr />
+								{values.expenses && values.expenses.length > 0 ? (
+									<>
+										{values.expenses.map((_, idx) => (
+											<div key={idx} className="flex gap-3 items-center">
+												<div className="form-control">
+													{idx === 0 && (
+														<label
+															className="label"
+															htmlFor={`expenses.0.title`}
+														>
+															<span className="label-text font-bold">
+																Title
+															</span>
+														</label>
+													)}
+													<Field
+														id={`expenses.${idx}.title`}
+														name={`expenses.${idx}.title`}
+														placeholder="Title"
+														className={`input input-bordered w-full max-w-xs ${
+															getIn(errors, `expenses.${idx}.title`)
+																? "border-red-300"
+																: ""
+														}`}
+													/>
+												</div>
+
+												<div className="form-control">
+													{idx === 0 && (
+														<label
+															className="label"
+															htmlFor={`expenses.0.amount`}
+														>
+															<span className="label-text font-bold">
+																Amount
+															</span>
+														</label>
+													)}
+													<Field
+														id={`expenses.${idx}.amount`}
+														name={`expenses.${idx}.amount`}
+														placeholder="Amount"
+														className={`input input-bordered w-full max-w-xs ${
+															getIn(errors, `expenses.${idx}.amount`)
+																? "border-red-300"
+																: ""
+														}`}
+													/>
+												</div>
+
+												<div className="form-control">
+													{idx === 0 && (
+														<label
+															className="label"
+															htmlFor={`expenses.0.cadence`}
+														>
+															<span className="label-text font-bold">
+																Cadence
+															</span>
+														</label>
+													)}
+													<Field
+														component="select"
+														id={`expenses.${idx}.cadence`}
+														name={`expenses.${idx}.cadence`}
+														className="select select-bordered w-34"
+													>
+														<option value="weekly">Weekly</option>
+														<option value="fortnightly">Fortnightly</option>
+														<option value="monthly">Monthly</option>
+														<option value="quarterly">Quarterly</option>
+														<option value="annually">Annually</option>
+													</Field>
+												</div>
+
+												<button
+													className="btn btn-ghost text-red-500 w-8 min-h-8 max-h-8 p-0"
+													onClick={() => arrayHelpers.remove(idx)}
+												>
+													<FaTimes />
+												</button>
+											</div>
+										))}
+
+										<button
+											onClick={() =>
+												arrayHelpers.push({
+													title: "",
+													amount: "",
+													cadence: "weekly",
+												})
+											}
+											className="btn btn-outline"
+										>
+											Add new
+										</button>
+									</>
+								) : (
+									<button
+										onClick={() =>
+											arrayHelpers.push({
+												title: "",
+												amount: "",
+												cadence: "weekly",
+											})
+										}
+										className="btn btn-outline"
+									>
+										Add new
+									</button>
+								)}
+							</div>
+						)}
+					/>
 
 					<div className="flex gap-5">
 						<Button

@@ -1,12 +1,10 @@
 import CurrencyText from "@atoms/currency-text";
 import Heading from "@atoms/heading";
 import { financeAtom } from "@state/finance-atom";
+import { estimateSavings, calculateTotalExpenses } from "@utils/finance";
 import {
-	calculateAnnualSavings,
+	calculateAnnualExpenseAmount,
 	calculateEmployerSuperContribution,
-	calculateTotalExpenses,
-} from "@utils/finance";
-import {
 	calculateHecsRepayment,
 	calculateIncomeTax,
 	calculateMedicareLevy,
@@ -78,17 +76,21 @@ const Breakdown = () => {
 				</Section>
 
 				<Section
-					heading={["Expenses", calculateTotalExpenses(finances.expenses)]}
+					heading={["Expenses", -calculateTotalExpenses(finances.expenses)]}
 				>
 					{finances.expenses?.map((expense, idx) => (
-						<Indent key={idx} label={expense.title} value={-expense.amount} />
+						<Indent
+							key={idx}
+							label={expense.title}
+							value={-calculateAnnualExpenseAmount(expense)}
+						/>
 					))}
 				</Section>
 
 				<div className="flex justify-between">
 					<Heading level="4">Savings</Heading>
 					<Heading level="4">
-						<CurrencyText value={calculateAnnualSavings(finances).cash} />
+						<CurrencyText value={estimateSavings(finances).estimatedEndTotal} />
 					</Heading>
 				</div>
 			</div>

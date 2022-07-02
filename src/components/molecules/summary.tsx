@@ -1,4 +1,4 @@
-import { calculateAnnualSavings } from "@utils/finance";
+import { estimateSavings } from "@utils/finance";
 import { formatDollars } from "@utils/generic";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
@@ -10,9 +10,9 @@ const Summary = () => {
 
 	useEffect(() => {
 		if (finances !== undefined) {
-			const calculatedSavings = calculateAnnualSavings(finances);
+			const calculatedSavings = estimateSavings(finances);
 
-			setSavings(calculatedSavings?.cash);
+			setSavings(calculatedSavings?.estimatedEndTotal);
 		}
 	}, [finances]);
 
