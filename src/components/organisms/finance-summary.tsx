@@ -10,20 +10,20 @@ const FinanceSummary = () => {
 	const [finances] = useAtom(financeAtom);
 
 	return (
-		<div className="gap-5 flex flex-col">
+		<div className="gap-5 flex flex-col w-64">
 			<div className="flex items-center gap-1 justify-center relative">
 				<Heading level={3}>Your Finances</Heading>
 				{!editingFinances && (
 					<button
 						onClick={() => setEditingFinances(true)}
-						className="w-8 h-8 inline-flex justify-center items-center btn-ghost rounded-md absolute right-8"
+						className="w-8 h-8 inline-flex justify-center items-center btn-ghost rounded-md absolute right-0"
 					>
 						<FaPencilAlt />
 					</button>
 				)}
 			</div>
 
-			<div className="flex gap-10 items-center justify-between ">
+			<div className="flex gap-10 items-center justify-between">
 				<span>
 					<b>Salary</b> {formatDollars(finances.salary)}
 				</span>
