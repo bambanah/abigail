@@ -11,12 +11,12 @@ const FinanceSummary = () => {
 
 	return (
 		<div className="gap-5 flex flex-col">
-			<div className="flex items-center gap-1 justify-center">
+			<div className="flex items-center gap-1 justify-center relative">
 				<Heading level={3}>Your Finances</Heading>
 				{!editingFinances && (
 					<button
 						onClick={() => setEditingFinances(true)}
-						className="w-8 h-8 inline-flex justify-center items-center btn-ghost rounded-md"
+						className="w-8 h-8 inline-flex justify-center items-center btn-ghost rounded-md absolute right-8"
 					>
 						<FaPencilAlt />
 					</button>

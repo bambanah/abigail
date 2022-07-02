@@ -8,6 +8,14 @@ import {
 	calculateMedicareLevySurcharge,
 	calculateMedicareLevy,
 } from "./finance-helpers";
+import { MIN_EMPLOYER_SUPER_RATE } from "./constants";
+
+export const calculateEmployerSuperContribution = (
+	assessableIncome: number,
+	rate = MIN_EMPLOYER_SUPER_RATE
+) => {
+	return assessableIncome * rate;
+};
 
 export const calculateAnnualSavings = (finances: FinancialDetails) => {
 	const fhss = finances.schemes?.fhss ? 15_000 : 0;
@@ -33,7 +41,7 @@ export const calculateAnnualSavings = (finances: FinancialDetails) => {
 
 	return {
 		cash: round(postExpensesAmount + fhssAfterWithdrawal, 2),
-		super: 0.1 * finances.salary,
+		super: calculateEmployerSuperContribution(assessableIncome),
 	};
 };
 
@@ -42,6 +50,7 @@ export const getAdvantageOfFHSS = (finances: FinancialDetails) => {
 		...finances,
 		schemes: { fhss: true },
 	});
+
 	const { cash: savingsWithoutFHSS } = calculateAnnualSavings({
 		...finances,
 		schemes: { fhss: false },

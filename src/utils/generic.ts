@@ -18,11 +18,13 @@ export const isValidNumber = (value: string) => {
 	return !Number.isNaN(value) && !Number.isNaN(Number.parseFloat(value));
 };
 
-export const formatDollars = (value: number | undefined) => {
-	return `$${
-		value?.toLocaleString(undefined, {
-			minimumFractionDigits: 0,
-			maximumFractionDigits: 2,
-		}) ?? "N/A"
-	}`;
+export const formatDollars = (value?: number, includeSign = false) => {
+	if (value === undefined) return "N/A";
+
+	const prefix = !includeSign ? "" : value > 0 ? "+" : value < 0 ? "-" : "";
+
+	return `${prefix}$${Math.abs(value).toLocaleString(undefined, {
+		minimumFractionDigits: 0,
+		maximumFractionDigits: 2,
+	})}`;
 };

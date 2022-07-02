@@ -1,4 +1,5 @@
 import Display from "@atoms/display";
+import Breakdown from "@molecules/breakdown";
 import Summary from "@molecules/summary";
 import FinanceForm from "@organisms/finance-form";
 import FinanceSummary from "@organisms/finance-summary";
@@ -9,7 +10,7 @@ const Home = () => {
 	const [editingFinances] = useAtom(isEditingFinanceAtom);
 
 	return (
-		<div className="max-w-lg flex flex-col gap-8 items-center mt-20">
+		<div className="max-w-lg flex flex-col gap-8 items-center">
 			<Display variant="primary" className="text-center">
 				Abigail
 			</Display>
@@ -19,6 +20,8 @@ const Home = () => {
 			</div>
 
 			<Summary />
+
+			<Breakdown />
 		</div>
 	);
 };

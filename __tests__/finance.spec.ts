@@ -164,7 +164,7 @@ describe("finance calculations", () => {
 		const savings = calculateAnnualSavings(finances);
 
 		expect(savings.cash).toEqual(59_403);
-		expect(savings.super).toEqual(10_000);
+		expect(savings.super).toEqual(8500);
 	});
 
 	it("Should calculate advantage of FHSS", () => {
@@ -218,7 +218,7 @@ describe("finance calculations", () => {
 		const savings = calculateAnnualSavings(finances);
 
 		expect(savings.cash).toEqual(63_578);
-		expect(savings.super).toEqual(10_000);
+		expect(savings.super).toEqual(10_500);
 	});
 
 	it("Should calculate savings with expenses, hecs, bonus, and no fhss", () => {
@@ -235,7 +235,7 @@ describe("finance calculations", () => {
 		const savings = calculateAnnualSavings(finances);
 
 		expect(savings.cash).toEqual(58_133);
-		expect(savings.super).toEqual(10_000);
+		expect(savings.super).toEqual(12_000);
 	});
 
 	it("Should calculate advantage of novated lease vs Alex", () => {
