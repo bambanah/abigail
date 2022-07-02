@@ -11,7 +11,7 @@ import {
 	getMarginalTaxRate,
 } from "./finance-helpers";
 
-interface YearlySnapshot {
+export interface YearlySnapshot {
 	year: number;
 	totalCash: number;
 	totalInvested?: number;

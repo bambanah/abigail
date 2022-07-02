@@ -1,5 +1,6 @@
 import Display from "@atoms/display";
 import Breakdown from "@molecules/breakdown";
+import ForecastChart from "@molecules/forecast-chart";
 import Summary from "@molecules/summary";
 import FinanceForm from "@organisms/finance-form";
 import FinanceSummary from "@organisms/finance-summary";
@@ -18,6 +19,7 @@ const Home = () => {
 			{editingFinances ? <FinanceForm /> : <FinanceSummary />}
 
 			<Summary />
+			<ForecastChart years={5} />
 
 			<Breakdown />
 		</div>

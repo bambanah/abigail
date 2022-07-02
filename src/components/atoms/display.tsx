@@ -1,13 +1,14 @@
 import React, { HTMLAttributes } from "react";
 
 interface Props extends HTMLAttributes<HTMLHeadingElement> {
-	variant?: "primary";
+	variant?: "primary" | "secondary";
 	children: React.ReactNode;
 }
 
 const Display = ({ children, variant, className, ...rest }: Props) => {
 	const variantClasses = {
 		primary: "text-violet-500",
+		secondary: "text-orange-600",
 	};
 
 	return (
