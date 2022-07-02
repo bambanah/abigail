@@ -4,7 +4,7 @@ import {
 	LEVY_FAMILY_REDUCTION_THRESHOLD,
 	LEVY_SINGLE_EXEMPTION_THRESHOLD,
 	LEVY_SINGLE_REDUCTION_THRESHOLD,
-	MIN_EMPLOYER_SUPER_RATE,
+	SGC_RATE,
 } from "./constants";
 import { round } from "./generic";
 
@@ -50,9 +50,30 @@ export const calculateHecsRepayment = (amount: number) => {
 	}
 };
 
+export const compoundInterest = (
+	initialAmount: number,
+	interestRate: number,
+	terms: number,
+	compoundFrequency: "monthly" | "annually" = "annually"
+) => {
+	let totalAmount = initialAmount;
+
+	for (
+		let i = 0;
+		i < (compoundFrequency === "monthly" ? terms * 12 : terms);
+		i++
+	) {
+		totalAmount +=
+			totalAmount *
+			(compoundFrequency === "monthly" ? interestRate / 12 : interestRate);
+	}
+
+	return round(totalAmount);
+};
+
 export const calculateEmployerSuperContribution = (
 	assessableIncome: number,
-	rate = MIN_EMPLOYER_SUPER_RATE
+	rate = SGC_RATE
 ) => {
 	return assessableIncome * rate;
 };

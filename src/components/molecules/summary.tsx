@@ -12,7 +12,7 @@ const Summary = () => {
 		if (finances !== undefined) {
 			const calculatedSavings = estimateSavings(finances);
 
-			setSavings(calculatedSavings?.estimatedEndTotal);
+			setSavings(calculatedSavings?.estimatedTotal);
 		}
 	}, [finances]);
 
@@ -24,7 +24,14 @@ const Summary = () => {
 		<div className="text-center mt-10">
 			<p>
 				If you earn <b>{formatDollars(finances.salary)}</b> p.a. with a{" "}
-				<b>{formatDollars(finances.bonus || 0)}</b> annual bonus
+				<b>
+					{formatDollars(
+						finances.bonus !== undefined && finances.bonus.length > 0
+							? finances.bonus[0]
+							: 0
+					)}
+				</b>{" "}
+				annual bonus
 			</p>
 			<br />
 			<h2 className="text-2xl">

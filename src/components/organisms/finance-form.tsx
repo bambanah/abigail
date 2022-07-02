@@ -19,8 +19,12 @@ const FinanceForm = () => {
 	return (
 		<Formik
 			initialValues={{
-				salary: initialFinances?.salary.toString() ?? "",
-				bonus: initialFinances?.bonus?.toString() ?? "",
+				salary: initialFinances.salary.toString() ?? "",
+				bonus:
+					initialFinances.bonus !== undefined &&
+					initialFinances.bonus.length > 0
+						? initialFinances.bonus.map((b) => b.toString())
+						: [],
 				utilizeFHSS: initialFinances?.schemes?.fhss ?? false,
 				hecs: initialFinances.hecs ?? false,
 				expenses: initialFinances.expenses ?? [],
@@ -29,7 +33,7 @@ const FinanceForm = () => {
 			onSubmit={(values, { setSubmitting }) => {
 				const finances: FinancialDetails = {
 					salary: Number(values.salary),
-					bonus: isValidNumber(values.bonus) ? Number(values.bonus) : 0,
+					bonus: [isValidNumber(values.bonus[0]) ? Number(values.bonus) : 0],
 					schemes: { fhss: values.utilizeFHSS },
 					hecs: values.hecs,
 					expenses: values.expenses.map(({ title, amount, cadence }) => ({
@@ -79,12 +83,12 @@ const FinanceForm = () => {
 						/>
 
 						<FormField
-							label="Bonus"
-							value={values.bonus}
-							name="bonus"
+							label="First Year Bonus"
+							value={values.bonus[0]}
+							name="bonus.0"
 							onChange={handleChange}
 							onBlur={handleBlur}
-							error={touched.bonus ? errors.bonus : ""}
+							// error={touched.bonus[0] ? errors.bonus[0] : ""}
 						/>
 					</div>
 

@@ -28,7 +28,12 @@ const FinanceSummary = () => {
 					<b>Salary</b> {formatDollars(finances.salary)}
 				</span>
 				<span>
-					<b>Bonus</b> {formatDollars(finances.bonus || 0)}
+					<b>Bonus</b>{" "}
+					{formatDollars(
+						finances.bonus !== undefined && finances.bonus.length > 0
+							? finances.bonus[0]
+							: 0
+					)}
 				</span>
 			</div>
 		</div>

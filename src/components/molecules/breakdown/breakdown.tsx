@@ -20,7 +20,11 @@ const Breakdown = () => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [finances] = useAtom(financeAtom);
 
-	const assessableIncome = finances.salary + (finances.bonus ?? 0);
+	const assessableIncome =
+		finances.salary +
+		(finances.bonus !== undefined && finances.bonus.length > 0
+			? finances.bonus[0]
+			: 0);
 
 	const employerSuperCont =
 		calculateEmployerSuperContribution(assessableIncome);
@@ -53,9 +57,9 @@ const Breakdown = () => {
 					isExpanded ? "max-h-full h-full" : "max-h-0 h-0 py-0"
 				}`}
 			>
-				<Section heading={["Income", totalPackage]}>
+				<Section heading={["Salary Package", totalPackage]}>
 					<Indent label="Salary" value={finances.salary} />
-					<Indent label="Bonus" value={finances.bonus} />
+					<Indent label="Bonus" value={finances.bonus?.at(0) ?? 0} />
 					<Indent label="Employer Super Cont." value={employerSuperCont} />
 				</Section>
 
@@ -90,7 +94,7 @@ const Breakdown = () => {
 				<div className="flex justify-between">
 					<Heading level="4">Savings</Heading>
 					<Heading level="4">
-						<CurrencyText value={estimateSavings(finances).estimatedEndTotal} />
+						<CurrencyText value={estimateSavings(finances).estimatedTotal} />
 					</Heading>
 				</div>
 			</div>

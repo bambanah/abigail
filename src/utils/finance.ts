@@ -1,16 +1,17 @@
-import { round } from "@utils/generic";
-import { FinancialDetails } from "@schema/financial-details-schema";
 import { Expense } from "@schema/expense-schema";
+import { FinancialDetails } from "@schema/financial-details-schema";
+import { round } from "@utils/generic";
+import { FHSS_MAX_ANNUAL_DEPOSIT, FHSS_MAX_TOTAL_DEPOSIT } from "./constants";
 import {
+	calculateEmployerSuperContribution,
 	calculateHecsRepayment,
 	calculateIncomeTax,
-	getMarginalTaxRate,
-	calculateMedicareLevySurcharge,
 	calculateMedicareLevy,
-	calculateEmployerSuperContribution,
+	calculateMedicareLevySurcharge,
+	getMarginalTaxRate,
 } from "./finance-helpers";
 
-interface FinancialBreakdown {
+interface YearlySnapshot {
 	financialDetails: FinancialDetails;
 	assessableIncome?: number;
 	takeHomeIncome?: number;
@@ -31,64 +32,114 @@ interface FinancialBreakdown {
 	totalExpenses?: number;
 }
 
+interface EsimateSavingsOptions {
+	years?: number;
+	superInterest?: number;
+	salaryIndexation?: number;
+}
+
 export const estimateSavings = (
 	finances: FinancialDetails,
-	years = 1,
-	appreciateSuper: boolean | number = true,
-	withdrawFhss = true
+	options?: EsimateSavingsOptions
 ) => {
-	const fullBreakdown: FinancialBreakdown = {
-		financialDetails: finances,
-	};
+	const years = options?.years ?? 1;
+	// TODO: Probably a better way of handling this
+	const superInterest = options?.superInterest ?? 0.06;
+	const salaryIndexation = options?.salaryIndexation ?? 0.025;
 
-	const fhss = finances.schemes?.fhss ? 15_000 : 0;
+	// TODO: Populate this
+	const yearlySnapshots: YearlySnapshot[] = [];
 
-	const assessableIncome = finances.salary + (finances.bonus ?? 0) - fhss;
+	let salary = finances.salary;
 
-	const takeHomeIncome = calculatePostTaxAmount(
-		assessableIncome,
-		finances.hecs
-	);
+	let cashSavingsAmount = finances.currentCash ?? 0;
+	// Not including FHSS deposits, as they will be withdrawn
+	let superAmount = 0;
+	let fhssAmountInSuper = 0;
+	let totalFhssDeposit = 0;
 
-	const postExpensesAmount =
-		takeHomeIncome - calculateTotalExpenses(finances.expenses);
+	for (let i = 0; i < years; i++) {
+		// Apply interest/indexing from the second year onwards
+		if (i > 0) {
+			salary += salary * salaryIndexation;
 
-	// FHSS gets taxed at marginal tax rate - 30% when withdrawn
-	const fhssWithdrawalTaxRate = Math.max(
-		0,
-		getMarginalTaxRate(assessableIncome) - 0.3
-	);
+			superAmount += superAmount * superInterest;
+			fhssAmountInSuper += fhssAmountInSuper * superInterest;
+		}
 
-	const fhssAmountInSuper = 0.85 * fhss * years;
+		const bonus =
+			finances.bonus !== undefined && finances.bonus.length >= i + 1
+				? finances.bonus[i] ?? 0
+				: 0;
+		let assessableIncome = salary + bonus;
+
+		// ----- 1. Salary Sacrifice -----
+		if (
+			finances.schemes?.fhss &&
+			totalFhssDeposit < FHSS_MAX_TOTAL_DEPOSIT &&
+			salary > 30_000
+		) {
+			const amountToDeposit = Math.min(
+				FHSS_MAX_ANNUAL_DEPOSIT,
+				FHSS_MAX_TOTAL_DEPOSIT - totalFhssDeposit
+			);
+
+			assessableIncome -= amountToDeposit;
+
+			totalFhssDeposit += amountToDeposit;
+			fhssAmountInSuper += 0.85 * amountToDeposit;
+		}
+
+		// TODO: Voluntary concessional super contributions
+
+		// ----- 2. Tax and HECS -----
+		const takeHomeIncome = calculatePostTaxAmount(
+			assessableIncome,
+			finances.hecs
+		);
+
+		/// ----- 3. Expenses -----
+		const postExpensesAmount =
+			takeHomeIncome - calculateTotalExpenses(finances.expenses);
+
+		cashSavingsAmount += round(postExpensesAmount);
+		superAmount += calculateEmployerSuperContribution(salary);
+	}
+
+	const fhssWithdrawalTaxRate = Math.max(0, getMarginalTaxRate(salary) - 0.3);
 	const fhssAfterWithdrawal = fhssAmountInSuper * (1 - fhssWithdrawalTaxRate);
 
-	fullBreakdown.super = {
-		employerCont: calculateEmployerSuperContribution(assessableIncome),
-	};
-
 	return {
-		estimatedEndTotal: round(postExpensesAmount + fhssAfterWithdrawal, 2),
-		breakdown: fullBreakdown,
+		estimatedTotal: round(
+			cashSavingsAmount + fhssAfterWithdrawal + superAmount
+		),
+		cash: cashSavingsAmount,
+		super: superAmount,
+		yearlySnapshots,
 	};
 };
 
-export const getAdvantageOfFHSS = (finances: FinancialDetails) => {
-	const { estimatedEndTotal: savingsWithFHSS } = estimateSavings({
-		...finances,
-		schemes: { fhss: true },
-	});
+export const getAdvantageOfFHSS = (
+	finances: FinancialDetails,
+	options?: EsimateSavingsOptions
+) => {
+	const { estimatedTotal: savingsWithFHSS } = estimateSavings(
+		{
+			...finances,
+			schemes: { fhss: true },
+		},
+		options
+	);
 
-	const { estimatedEndTotal: savingsWithoutFHSS } = estimateSavings({
-		...finances,
-		schemes: { fhss: false },
-	});
+	const { estimatedTotal: savingsWithoutFHSS } = estimateSavings(
+		{
+			...finances,
+			schemes: { fhss: false },
+		},
+		options
+	);
 
 	return round(savingsWithFHSS - savingsWithoutFHSS);
-};
-
-export const forecastSavings = (finances: FinancialDetails, months: number) => {
-	const monthlySavings = estimateSavings(finances).estimatedEndTotal / 12;
-	return round(monthlySavings * months);
 };
 
 export const calculateTotalExpenses = (expenses?: Expense[]) => {

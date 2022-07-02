@@ -8,9 +8,15 @@ export const financialDetailsSchema = yup.object({
 		.min(0, "Can't be less than zero")
 		.required(),
 	bonus: yup
-		.number()
-		.typeError("Must be a number")
-		.min(0, "Can't be less than zero")
+		.array()
+		.typeError("Must be an array of numbers")
+		.of(
+			yup
+				.number()
+				.typeError("Must be a number")
+				.min(0, "Can't be less than zero")
+				.required()
+		)
 		.optional(),
 	hecs: yup.boolean().optional(),
 
