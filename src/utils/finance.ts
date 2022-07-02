@@ -12,16 +12,23 @@ import {
 } from "./finance-helpers";
 
 interface YearlySnapshot {
-	financialDetails: FinancialDetails;
+	year: number;
+	totalCash: number;
+	totalInvested?: number;
+	totalValue: number;
+
 	assessableIncome?: number;
 	takeHomeIncome?: number;
 
+	totalSuper: number;
 	super?: {
+		fhss?: number;
 		employerCont?: number;
 		concessionalCont?: number;
 		nonConcessionalCont?: number;
 	};
 
+	totalDeductions: number;
 	deductions?: {
 		incomeTax?: number;
 		medicareLevy?: number;
@@ -57,6 +64,7 @@ export const estimateSavings = (
 	let superAmount = 0;
 	let fhssAmountInSuper = 0;
 	let totalFhssDeposit = 0;
+	let totalInvestedAmount = 0;
 
 	for (let i = 0; i < years; i++) {
 		// Apply interest/indexing from the second year onwards
@@ -65,6 +73,8 @@ export const estimateSavings = (
 
 			superAmount += superAmount * superInterest;
 			fhssAmountInSuper += fhssAmountInSuper * superInterest;
+
+			totalInvestedAmount += totalInvestedAmount * 0.1;
 		}
 
 		const bonus =
@@ -102,8 +112,27 @@ export const estimateSavings = (
 		const postExpensesAmount =
 			takeHomeIncome - calculateTotalExpenses(finances.expenses);
 
-		cashSavingsAmount += round(postExpensesAmount);
 		superAmount += calculateEmployerSuperContribution(salary);
+		totalInvestedAmount += 0 * postExpensesAmount;
+		cashSavingsAmount += 1 * postExpensesAmount;
+
+		yearlySnapshots.push({
+			year: i + 1,
+			totalCash: round(cashSavingsAmount),
+			totalInvested: round(totalInvestedAmount),
+			totalSuper: round(superAmount),
+			totalValue: round(
+				cashSavingsAmount +
+					totalInvestedAmount +
+					superAmount +
+					fhssAmountInSuper
+			),
+
+			super: {
+				fhss: round(fhssAmountInSuper),
+			},
+			totalDeductions: round(assessableIncome - takeHomeIncome),
+		});
 	}
 
 	const fhssWithdrawalTaxRate = Math.max(0, getMarginalTaxRate(salary) - 0.3);
@@ -111,7 +140,10 @@ export const estimateSavings = (
 
 	return {
 		estimatedTotal: round(
-			cashSavingsAmount + fhssAfterWithdrawal + superAmount
+			cashSavingsAmount +
+				totalInvestedAmount +
+				fhssAfterWithdrawal +
+				superAmount
 		),
 		cash: cashSavingsAmount,
 		super: superAmount,

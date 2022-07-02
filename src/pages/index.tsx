@@ -1,7 +1,7 @@
 import Home from "@templates/home";
 import Layout from "@templates/layout";
 
-const DashboardPage = () => {
+const LandingPage = () => {
 	return (
 		<Layout>
 			<Home />
@@ -9,4 +9,4 @@ const DashboardPage = () => {
 	);
 };
 
-export default DashboardPage;
+export default LandingPage;

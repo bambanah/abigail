@@ -8,9 +8,11 @@ const Summary = () => {
 	const [finances] = useAtom(financeAtom);
 	const [savings, setSavings] = useState(0);
 
+	const years = 5;
+
 	useEffect(() => {
 		if (finances !== undefined) {
-			const calculatedSavings = estimateSavings(finances);
+			const calculatedSavings = estimateSavings(finances, { years });
 
 			setSavings(calculatedSavings?.estimatedTotal);
 		}
@@ -35,7 +37,7 @@ const Summary = () => {
 			</p>
 			<br />
 			<h2 className="text-2xl">
-				You could save <b>{formatDollars(savings)}</b>/year
+				You could have <b>{formatDollars(savings)}</b> after {years} years
 			</h2>
 		</div>
 	);
