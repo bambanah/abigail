@@ -35,9 +35,9 @@ It's still in its very early stages, but it's got some massive potential.
 
 ### Implemented
 * [Next.js](https://github.com/vercel/next.js)
+* [recharts](https://github.com/recharts/recharts)
 
 ### Coming Soon
-* [recharts](https://github.com/recharts/recharts)
 * [next-themes](https://github.com/pacocoursey/next-themes)
 
 ### Planned
