@@ -22,7 +22,7 @@ It's still in its very early stages, but it's got some massive potential.
   - [ ] Mobile phone
 - [ ] See the impact of various government saving schemes on short and long-term goals
   - [ ] Super co-contributions
-  - [ ] Fist Home Super Saver scheme (FHSS) (coming soon)
+  - [ ] First Home Super Saver scheme (FHSS) (coming soon)
 - [ ] Integrate with your bank to populate expenses with _actual_ data
   - [ ] [Up](https://developer.up.com.au/) (coming soon)
   - [ ] [CommBank](https://www.commbank.com.au/Developer/)
