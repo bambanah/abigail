@@ -12,8 +12,8 @@ It's still in its very early stages, but it's got some massive potential.
 
 - [x] Calculate your actual take home pay based on your salary
 - [ ] Support for shift workers with less predictable income
-- [ ] Forecast your super contributions (coming soon)
-- [ ] Add expenses to forecast your saving potential over time (coming soon)
+- [x] Forecast your super contributions
+- [x] Add expenses to forecast your saving potential over time
   - [ ] Tag expenses as **essential** or **non-essential**
   - [ ] Categorise expenses for improved insight
 - [ ] Weigh up the benefit of various salary sacrifice options
