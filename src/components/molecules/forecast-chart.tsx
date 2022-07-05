@@ -25,7 +25,7 @@ const ForecastChart: FC<Props> = ({ years = 5 }) => {
 	const { yearlySnapshots } = estimateSavings(finances, { years });
 
 	return (
-		<ResponsiveContainer width="100%" height="100%">
+		<ResponsiveContainer width="100%" height={450}>
 			<BarChart
 				data={yearlySnapshots}
 				margin={{
