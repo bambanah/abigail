@@ -9,6 +9,10 @@ module.exports = {
 				serif: ["Spectral", "Lora", ...defaultTheme.fontFamily.serif],
 				display: ["Outfit", ...defaultTheme.fontFamily.sans],
 			},
+			colors: {
+				background: "#EDEBE9",
+				...defaultTheme.colors,
+			},
 		},
 	},
 	plugins: [require("daisyui")],

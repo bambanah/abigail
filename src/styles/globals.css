@@ -2,8 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
 body {
-	overflow-y: scroll;
+	overflow: hidden;
 }
 
 @font-face {

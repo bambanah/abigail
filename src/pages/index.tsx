@@ -1,10 +1,10 @@
-import Home from "@templates/home";
+import Dashboard from "@templates/dashboard";
 import Layout from "@templates/layout";
 
 const LandingPage = () => {
 	return (
 		<Layout>
-			<Home />
+			<Dashboard />
 		</Layout>
 	);
 };
