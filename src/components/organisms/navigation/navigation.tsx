@@ -25,7 +25,9 @@ const Navigation: FC<HTMLAttributes<HTMLDivElement>> = ({ className }) => {
 			>
 				<Link href="/">
 					<a>
-						<Display className="text-center text-4xl">Abigail</Display>
+						<Display className="text-center text-4xl text-primary">
+							Abigail
+						</Display>
 					</a>
 				</Link>
 
@@ -33,7 +35,7 @@ const Navigation: FC<HTMLAttributes<HTMLDivElement>> = ({ className }) => {
 					<NavLink href="/" icon={IoHomeOutline} iconActive={IoHome}>
 						Dashboard
 					</NavLink>
-					<NavLink href="/hypotheticals" icon={IoHelp}>
+					<NavLink href="/what-if" icon={IoHelp}>
 						What If...
 					</NavLink>
 					<NavLink

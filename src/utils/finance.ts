@@ -17,8 +17,9 @@ export interface YearlySnapshot {
 	totalInvested?: number;
 	totalValue: number;
 
-	assessableIncome?: number;
-	takeHomeIncome?: number;
+	assessableIncome: number;
+	takeHomeIncome: number;
+	postExpensesIncome: number;
 
 	totalSuper: number;
 	super?: {
@@ -43,6 +44,7 @@ interface EsimateSavingsOptions {
 	years?: number;
 	superInterest?: number;
 	salaryIndexation?: number;
+	includeSuperInTotal?: boolean;
 }
 
 export const estimateSavings = (
@@ -53,12 +55,14 @@ export const estimateSavings = (
 	// TODO: Probably a better way of handling this
 	const superInterest = options?.superInterest ?? 0.06;
 	const salaryIndexation = options?.salaryIndexation ?? 0.025;
+	const includeSuperInTotal = options?.includeSuperInTotal ?? true;
 
 	// TODO: Populate this
 	const yearlySnapshots: YearlySnapshot[] = [];
 
 	let salary = finances.salary;
 
+	let hecsAmountLeft = finances.hecsAmount ?? Number.POSITIVE_INFINITY;
 	let cashSavingsAmount = finances.currentCash ?? 0;
 	// Not including FHSS deposits, as they will be withdrawn
 	let superAmount = 0;
@@ -70,6 +74,7 @@ export const estimateSavings = (
 		// Apply interest/indexing from the second year onwards
 		if (i > 0) {
 			salary += salary * salaryIndexation;
+			hecsAmountLeft += hecsAmountLeft * 0.01;
 
 			superAmount += superAmount * superInterest;
 			fhssAmountInSuper += fhssAmountInSuper * superInterest;
@@ -82,6 +87,7 @@ export const estimateSavings = (
 				? finances.bonus[i] ?? 0
 				: 0;
 		let assessableIncome = salary + bonus;
+		superAmount += calculateEmployerSuperContribution(salary);
 
 		// ----- 1. Salary Sacrifice -----
 		if (
@@ -101,37 +107,74 @@ export const estimateSavings = (
 		}
 
 		// TODO: Voluntary concessional super contributions
+		const concessionalSuperCont = 0;
+		superAmount += concessionalSuperCont;
 
 		// ----- 2. Tax and HECS -----
-		const takeHomeIncome = calculatePostTaxAmount(
-			assessableIncome,
-			finances.hecs
-		);
+		const incomeTax = calculateIncomeTax(assessableIncome);
 
-		/// ----- 3. Expenses -----
-		const postExpensesAmount =
+		const medicareLevy = calculateMedicareLevy(assessableIncome);
+		const medicareLevySurcharge =
+			calculateMedicareLevySurcharge(assessableIncome);
+
+		const hecsPaid = finances.hecs
+			? Math.min(calculateHecsRepayment(assessableIncome), hecsAmountLeft)
+			: 0;
+		hecsAmountLeft -= hecsPaid;
+
+		const takeHomeIncome =
+			assessableIncome -
+			incomeTax -
+			medicareLevy -
+			medicareLevySurcharge -
+			hecsPaid;
+
+		// ----- 3. Expenses -----
+		let postExpensesAmount =
 			takeHomeIncome - calculateTotalExpenses(finances.expenses);
 
-		superAmount += calculateEmployerSuperContribution(salary);
+		// TODO: Voluntary non-concessional super contributions
+		const nonConcessionalSuperCont = 0;
+		superAmount += nonConcessionalSuperCont;
+		postExpensesAmount -= nonConcessionalSuperCont;
+
+		// TODO: Invest money
 		totalInvestedAmount += 0 * postExpensesAmount;
 		cashSavingsAmount += 1 * postExpensesAmount;
 
 		yearlySnapshots.push({
 			year: i + 1,
+
+			assessableIncome,
+			takeHomeIncome,
+			postExpensesIncome: postExpensesAmount,
+
 			totalCash: round(cashSavingsAmount),
 			totalInvested: round(totalInvestedAmount),
-			totalSuper: round(superAmount),
 			totalValue: round(
 				cashSavingsAmount +
 					totalInvestedAmount +
-					superAmount +
-					fhssAmountInSuper
+					fhssAmountInSuper +
+					(includeSuperInTotal ? superAmount : 0)
 			),
 
+			totalSuper: round(superAmount),
 			super: {
+				employerCont: superAmount,
+				concessionalCont: concessionalSuperCont,
+				nonConcessionalCont: 0,
 				fhss: round(fhssAmountInSuper),
 			},
-			totalDeductions: round(assessableIncome - takeHomeIncome),
+
+			totalDeductions: round(
+				hecsPaid + incomeTax + medicareLevy + medicareLevySurcharge
+			),
+			deductions: {
+				hecs: hecsPaid,
+				incomeTax,
+				medicareLevy,
+				medicareLevySurcharge,
+			},
 		});
 	}
 
@@ -201,12 +244,9 @@ export const calculateTotalExpenses = (expenses?: Expense[]) => {
 
 export const calculatePostTaxAmount = (
 	assessableIncome: number,
-	hecs = false,
 	medicareLevySurchargeExempt = false,
 	medicareLevyExempt = false
 ) => {
-	const hecsPaid = hecs ? calculateHecsRepayment(assessableIncome) : 0;
-
 	const incomeTax = calculateIncomeTax(assessableIncome);
 
 	const medicareLevy = medicareLevyExempt
@@ -217,10 +257,6 @@ export const calculatePostTaxAmount = (
 		: calculateMedicareLevySurcharge(assessableIncome);
 
 	return round(
-		assessableIncome -
-			hecsPaid -
-			incomeTax -
-			medicareLevy -
-			medicareLevySurcharge
+		assessableIncome - incomeTax - medicareLevy - medicareLevySurcharge
 	);
 };

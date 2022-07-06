@@ -19,6 +19,7 @@ export const financialDetailsSchema = yup.object({
 		)
 		.optional(),
 	hecs: yup.boolean().optional(),
+	hecsAmount: yup.number().optional(),
 
 	currentCash: yup
 		.number()

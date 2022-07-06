@@ -18,13 +18,31 @@ export const isValidNumber = (value: string) => {
 	return !Number.isNaN(value) && !Number.isNaN(Number.parseFloat(value));
 };
 
-export const formatDollars = (value?: number, includeSign = false) => {
+interface FormatDollarOptions {
+	includeSign?: boolean;
+	shorten?: boolean;
+	decimalPlaces?: number;
+}
+
+export const formatDollars = (
+	value?: number,
+	options?: FormatDollarOptions
+) => {
 	if (value === undefined) return "N/A";
 
-	const prefix = !includeSign ? "" : value > 0 ? "+" : value < 0 ? "-" : "";
+	const includeSign = options?.includeSign ?? false;
+	const shorten = options?.shorten ?? false;
+	const decimalPlaces = options?.decimalPlaces ?? 2;
 
-	return `${prefix}$${Math.abs(value).toLocaleString(undefined, {
-		minimumFractionDigits: 0,
-		maximumFractionDigits: 2,
-	})}`;
+	let sign = "";
+	if (includeSign && value !== 0) {
+		sign = value > 0 ? "+" : "-";
+	}
+
+	const formattedNumber = Intl.NumberFormat("en-AU", {
+		notation: shorten ? "compact" : "standard",
+		maximumFractionDigits: decimalPlaces,
+	}).format(Math.abs(value));
+
+	return `${sign}$${formattedNumber}`;
 };

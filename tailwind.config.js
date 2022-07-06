@@ -7,10 +7,11 @@ module.exports = {
 			fontFamily: {
 				sans: ["Inter", ...defaultTheme.fontFamily.sans],
 				serif: ["Spectral", "Lora", ...defaultTheme.fontFamily.serif],
-				display: ["Outfit", ...defaultTheme.fontFamily.sans],
+				display: ['"Source Serif Pro"', ...defaultTheme.fontFamily.serif],
+				outfit: ["Outfit", ...defaultTheme.fontFamily.sans],
 			},
 			colors: {
-				background: "#FAFAFA",
+				primary: "#DC2626",
 				...defaultTheme.colors,
 			},
 		},

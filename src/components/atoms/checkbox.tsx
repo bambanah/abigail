@@ -10,7 +10,7 @@ interface Props {
 
 const Checkbox = ({ checked, label, name, onChange, className }: Props) => {
 	return (
-		<div className={`form-control ${className}`}>
+		<div className={`form-control max-w-xs ${className}`}>
 			<label className="label cursor-pointer justify-start gap-2">
 				<input
 					type="checkbox"

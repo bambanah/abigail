@@ -27,6 +27,7 @@ const FinanceForm = () => {
 						: [],
 				utilizeFHSS: initialFinances?.schemes?.fhss ?? false,
 				hecs: initialFinances.hecs ?? false,
+				hecsAmount: initialFinances.hecsAmount?.toString() ?? "",
 				expenses: initialFinances.expenses ?? [],
 			}}
 			validationSchema={financialDetailsSchema}
@@ -36,6 +37,7 @@ const FinanceForm = () => {
 					bonus: [isValidNumber(values.bonus[0]) ? Number(values.bonus) : 0],
 					schemes: { fhss: values.utilizeFHSS },
 					hecs: values.hecs,
+					hecsAmount: values.hecs ? Number(values.hecsAmount) : 0,
 					expenses: values.expenses.map(({ title, amount, cadence }) => ({
 						title,
 						amount: Number(amount),
@@ -92,18 +94,29 @@ const FinanceForm = () => {
 
 					<div className="flex gap-3 justify-between w-full">
 						<Checkbox
-							name="utilizeFHSS"
-							onChange={handleChange}
-							label="Utilise FHSS?"
-							checked={values.utilizeFHSS}
-							className="basis-1/2"
-						/>
-
-						<Checkbox
 							name="hecs"
 							onChange={handleChange}
 							label="Do you have HECS?"
 							checked={values.hecs}
+							className="basis-1/2"
+						/>
+
+						<FormField
+							label="Hecs Amount"
+							name="hecsAmount"
+							onChange={handleChange}
+							onBlur={handleBlur}
+							value={values.hecsAmount}
+							error={touched.hecsAmount ? errors.hecsAmount : ""}
+						/>
+					</div>
+
+					<div className="flex gap-3 justify-between w-full">
+						<Checkbox
+							name="utilizeFHSS"
+							onChange={handleChange}
+							label="Utilise FHSS?"
+							checked={values.utilizeFHSS}
 							className="basis-1/2"
 						/>
 					</div>

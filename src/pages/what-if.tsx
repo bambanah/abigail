@@ -1,8 +1,12 @@
 import Layout from "@templates/layout";
-import React from "react";
+import WhatIf from "@templates/what-if";
 
 const WhatIfPage = () => {
-	return <Layout>What If?</Layout>;
+	return (
+		<Layout>
+			<WhatIf />
+		</Layout>
+	);
 };
 
 export default WhatIfPage;

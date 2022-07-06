@@ -15,7 +15,7 @@ interface Props extends HTMLAttributes<HTMLHeadingElement> {
 const Display = ({ children, variant, className, ...rest }: Props) => {
 	return (
 		<h1
-			className={`text-5xl font-bold font-display ${
+			className={`text-5xl font-semibold font-display ${
 				variant ? `text-${variant}` : ""
 			} ${className}`}
 			{...rest}

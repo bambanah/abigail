@@ -27,7 +27,7 @@ const CurrencyText = ({
 
 	return (
 		<span className={`${color} ${className}`} {...rest}>
-			{value !== undefined ? formatDollars(value, includeSign) : "N/A"}
+			{value !== undefined ? formatDollars(value, { includeSign }) : "N/A"}
 		</span>
 	);
 };
