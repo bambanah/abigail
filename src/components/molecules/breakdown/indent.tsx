@@ -11,7 +11,7 @@ const Indent = ({ label, value, neutral, className, ...rest }: IndentProps) => (
 		<span>{label}</span>
 		<CurrencyText
 			value={value}
-			useColor={neutral ? "text-yellow-500" : true}
+			useColor={neutral ? "text-warning" : true}
 			includeSign={neutral ? false : true}
 		/>
 	</p>

@@ -1,20 +1,22 @@
 import React, { HTMLAttributes } from "react";
 
 interface Props extends HTMLAttributes<HTMLHeadingElement> {
-	variant?: "primary" | "secondary";
+	variant?:
+		| "primary"
+		| "secondary"
+		| "accent"
+		| "info"
+		| "success"
+		| "warning"
+		| "error";
 	children?: React.ReactNode;
 }
 
 const Display = ({ children, variant, className, ...rest }: Props) => {
-	const variantClasses = {
-		primary: "text-violet-500",
-		secondary: "text-orange-600",
-	};
-
 	return (
 		<h1
 			className={`text-5xl font-bold font-display ${
-				variant ? variantClasses[variant] : ""
+				variant ? `text-${variant}` : ""
 			} ${className}`}
 			{...rest}
 		>

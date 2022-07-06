@@ -32,7 +32,7 @@ const FormField: React.FC<Props> = ({
 		<div className="form-control">
 			<Label htmlFor={name} className="font-bold">
 				{label}
-				{required && <span className="text-red-500"> *</span>}
+				{required && <span className="text-error"> *</span>}
 			</Label>
 			<Input
 				placeholder={placeholder ?? label}

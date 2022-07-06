@@ -1,4 +1,5 @@
 import Display from "@atoms/display";
+import Link from "next/link";
 import { FC, HTMLAttributes } from "react";
 import {
 	IoHelp,
@@ -20,9 +21,13 @@ const Navigation: FC<HTMLAttributes<HTMLDivElement>> = ({ className }) => {
 		>
 			<div
 				style={{ height: "calc(100% - 8rem)" }}
-				className="flex box-border lg:flex-col lg:my-16 border-neutral-100 lg:border-r-2 lg:border-slate-200 lg:gap-20 lg:items-center"
+				className="flex box-border lg:flex-col lg:my-16 border-neutral-100 lg:gap-20 lg:items-center"
 			>
-				<Display className="text-center text-4xl">Abigail</Display>
+				<Link href="/">
+					<a>
+						<Display className="text-center text-4xl">Abigail</Display>
+					</a>
+				</Link>
 
 				<div className="flex items-start gap-6 lg:flex-col lg:w-full">
 					<NavLink href="/" icon={IoHomeOutline} iconActive={IoHome}>

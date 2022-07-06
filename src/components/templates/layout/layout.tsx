@@ -8,7 +8,7 @@ interface Props {
 
 const Layout: FC<Props> = ({ children }) => {
 	return (
-		<div className="flex flex-col items-center w-full max-w-full h-full m-auto bg-background-50 lg:flex-row lg:justify-center lg:items-start lg:max-h-screen">
+		<div className="flex flex-col items-center w-full max-w-full h-full m-auto lg:flex-row lg:justify-center lg:items-start lg:max-h-screen">
 			<Navigation />
 			<Content>{children}</Content>
 		</div>

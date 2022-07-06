@@ -16,13 +16,13 @@ const CurrencyText = ({
 	let color: string;
 
 	if (value === undefined || value === 0) {
-		color = "text-slate-500";
+		color = "text-neutral";
 	} else if (useColor === true) {
-		color = value > 0 ? "text-green-600" : "text-red-600";
+		color = value > 0 ? "text-success" : "text-error";
 	} else if (typeof useColor === "string") {
 		color = useColor;
 	} else {
-		color = "text-slate-500";
+		color = "text-neutral";
 	}
 
 	return (

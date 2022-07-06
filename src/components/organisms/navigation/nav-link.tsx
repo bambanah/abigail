@@ -40,7 +40,7 @@ const NavLink: FC<Props> = ({
 	return (
 		<Link href={href} {...rest}>
 			<a
-				className={`flex items-center gap-2 w-full px-10 transition-all hover:text-orange-500 ${
+				className={`flex items-center gap-2 w-full px-10 transition-all hover:text-primary ${
 					active ? "font-bold" : ""
 				}`}
 			>

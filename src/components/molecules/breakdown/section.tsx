@@ -22,7 +22,7 @@ const Section: React.FC<SectionProps> = ({
 				<Heading level="5">{label}</Heading>
 				<CurrencyText
 					value={total}
-					useColor={neutral ? "text-yellow-500" : true}
+					useColor={neutral ? "text-warning" : true}
 					includeSign={neutral ? false : true}
 					className="font-bold"
 				/>

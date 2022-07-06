@@ -6,7 +6,7 @@ const ErrorMessage: FC<HTMLAttributes<HTMLSpanElement>> = ({
 	...rest
 }) => {
 	return (
-		<span className={`text-red-500 ${className}`} {...rest}>
+		<span className={`text-error ${className}`} {...rest}>
 			{children}
 		</span>
 	);

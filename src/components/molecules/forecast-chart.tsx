@@ -25,7 +25,7 @@ const ForecastChart: FC<Props> = ({ years = 5 }) => {
 	const { yearlySnapshots } = estimateSavings(finances, { years });
 
 	return (
-		<ResponsiveContainer width="100%" height={450}>
+		<ResponsiveContainer width="100%" height={"100%"}>
 			<BarChart
 				data={yearlySnapshots}
 				margin={{
@@ -61,7 +61,7 @@ const ForecastChart: FC<Props> = ({ years = 5 }) => {
 						dataKey="totalValue"
 						position="top"
 						formatter={(value: number) => formatDollars(round(value, 0))}
-						className="fill-slate-600"
+						className="fill-base-content"
 					/>
 				</Bar>
 			</BarChart>

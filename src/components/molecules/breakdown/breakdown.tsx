@@ -42,10 +42,10 @@ const Breakdown = () => {
 		incomeTax + medicareLevy + medicareLevySurcharge + hecsRepayment;
 
 	return (
-		<div className="flex flex-col gap-5 max-w-96 items-center">
+		<div className="flex flex-col gap-5 w-full items-center h-full pt-5">
 			<button
 				onClick={() => setIsExpanded(!isExpanded)}
-				className="text-blue-500 flex items-center gap-1"
+				className="text-info flex items-center gap-1"
 			>
 				<span>{isExpanded ? "Hide" : "View"} Breakdown</span>
 				<FaChevronDown
@@ -53,7 +53,7 @@ const Breakdown = () => {
 				/>
 			</button>
 			<div
-				className={`flex flex-col gap-5 overflow-hidden shadow-lg p-5 box-border origin-top min-w-full rounded-md transition-all ${
+				className={`flex flex-col gap-5 overflow-hidden p-5 box-border origin-top min-w-full transition-all ${
 					isExpanded ? "max-h-full h-full" : "max-h-0 h-0 py-0"
 				}`}
 			>
