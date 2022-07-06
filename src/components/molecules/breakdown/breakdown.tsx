@@ -1,7 +1,7 @@
 import CurrencyText from "@atoms/currency-text";
 import Heading from "@atoms/heading";
 import { financeAtom } from "@state/finance-atom";
-import { estimateSavings, calculateTotalExpenses } from "@utils/finance";
+import { calculateTotalExpenses, estimateSavings } from "@utils/finance";
 import {
 	calculateAnnualExpenseAmount,
 	calculateEmployerSuperContribution,
@@ -11,13 +11,10 @@ import {
 	calculateMedicareLevySurcharge,
 } from "@utils/finance-helpers";
 import { useAtom } from "jotai";
-import { useState } from "react";
-import { FaChevronDown } from "react-icons/fa";
 import Indent from "./indent";
 import Section from "./section";
 
 const Breakdown = () => {
-	const [isExpanded, setIsExpanded] = useState(false);
 	const [finances] = useAtom(financeAtom);
 
 	const assessableIncome =
@@ -42,21 +39,8 @@ const Breakdown = () => {
 		incomeTax + medicareLevy + medicareLevySurcharge + hecsRepayment;
 
 	return (
-		<div className="flex flex-col gap-5 w-full items-center h-full pt-5">
-			<button
-				onClick={() => setIsExpanded(!isExpanded)}
-				className="text-info flex items-center gap-1"
-			>
-				<span>{isExpanded ? "Hide" : "View"} Breakdown</span>
-				<FaChevronDown
-					className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}
-				/>
-			</button>
-			<div
-				className={`flex flex-col gap-5 overflow-hidden p-5 box-border origin-top min-w-full transition-all ${
-					isExpanded ? "max-h-full h-full" : "max-h-0 h-0 py-0"
-				}`}
-			>
+		<div className="flex flex-col w-full items-center h-full">
+			<div className={`flex flex-col px-2 box-border origin-top w-full`}>
 				<Section heading={["Salary Package", totalPackage]}>
 					<Indent label="Salary" value={finances.salary} />
 					<Indent label="Bonus" value={finances.bonus?.at(0) ?? 0} />

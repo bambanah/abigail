@@ -10,7 +10,7 @@ module.exports = {
 				display: ["Outfit", ...defaultTheme.fontFamily.sans],
 			},
 			colors: {
-				background: "#EDEBE9",
+				background: "#FAFAFA",
 				...defaultTheme.colors,
 			},
 		},

@@ -23,7 +23,7 @@ const Summary = () => {
 	}
 
 	return (
-		<div className="text-center mt-10">
+		<div className="text-center">
 			<p>
 				If you earn <b>{formatDollars(finances.salary)}</b> p.a. with a{" "}
 				<b>
@@ -36,7 +36,7 @@ const Summary = () => {
 				annual bonus
 			</p>
 			<br />
-			<h2 className="text-2xl">
+			<h2 className="text-xl">
 				You could have <b>{formatDollars(savings)}</b> after {years} years
 			</h2>
 		</div>

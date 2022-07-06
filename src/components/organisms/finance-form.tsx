@@ -62,11 +62,9 @@ const FinanceForm = () => {
 			}) => (
 				<form
 					onSubmit={handleSubmit}
-					className="box-border w-full flex flex-col gap-5 items-center p-5 rounded-lg"
+					className="box-border w-full flex flex-col items-center rounded-lg"
 				>
-					<Heading level="3">Your Finances</Heading>
-
-					<div className="flex gap-3 flex-col w-full">
+					<div className="flex gap-1 flex-col w-full">
 						<Heading level="4">Income</Heading>
 						<hr className="w-full" />
 					</div>
@@ -114,12 +112,14 @@ const FinanceForm = () => {
 						name="expenses"
 						render={(arrayHelpers) => (
 							<div className="flex flex-col gap-3 justify-between w-full">
-								<Heading level="4">Expenses</Heading>
-								<hr />
+								<div className="flex flex-col gap-1">
+									<Heading level="4">Expenses</Heading>
+									<hr />
+								</div>
 								{values.expenses && values.expenses.length > 0 ? (
 									<>
 										{values.expenses.map((_, idx) => (
-											<div key={idx} className="flex gap-3 items-center">
+											<div key={idx} className="flex gap-2 items-center">
 												<div className="form-control">
 													{idx === 0 && (
 														<label
@@ -181,7 +181,7 @@ const FinanceForm = () => {
 														component="select"
 														id={`expenses.${idx}.cadence`}
 														name={`expenses.${idx}.cadence`}
-														className="select select-bordered w-34"
+														className="select select-bordered w-min-content"
 													>
 														<option value="weekly">Weekly</option>
 														<option value="fortnightly">Fortnightly</option>
@@ -192,7 +192,7 @@ const FinanceForm = () => {
 												</div>
 
 												<button
-													className="btn btn-ghost text-error w-8 min-h-8 max-h-8 p-0"
+													className="btn btn-ghost text-error w-6 min-h-6 max-h-6 p-0"
 													onClick={() => arrayHelpers.remove(idx)}
 												>
 													<FaTimes />

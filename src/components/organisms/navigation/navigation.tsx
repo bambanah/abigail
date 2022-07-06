@@ -17,7 +17,7 @@ import NavLink from "./nav-link";
 const Navigation: FC<HTMLAttributes<HTMLDivElement>> = ({ className }) => {
 	return (
 		<div
-			className={`justify-between w-full max-w-3xl box-border lg:w-64 lg:h-screen lg:max-h-screen ${className}`}
+			className={`justify-between w-full max-w-3xl box-border lg:w-64 lg:h-screen lg:max-h-screen shadow-md z-10 ${className}`}
 		>
 			<div
 				style={{ height: "calc(100% - 8rem)" }}
