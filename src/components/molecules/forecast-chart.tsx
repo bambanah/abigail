@@ -1,9 +1,6 @@
 import CurrencyText from "@atoms/currency-text";
-import { FinancialDetails } from "@schema/financial-details-schema";
-import { financeAtom } from "@state/finance-atom";
-import { YearlySnapshot, estimateSavings } from "@utils/forecast";
+import { YearlySnapshot } from "@utils/forecast";
 import { formatDollars, round } from "@utils/generic";
-import { useAtom } from "jotai";
 import { FC } from "react";
 import {
 	Bar,
@@ -19,29 +16,20 @@ import {
 } from "recharts";
 
 interface Props {
-	finances?: FinancialDetails;
-	years?: number;
+	yearlySnapshots: YearlySnapshot[];
 	includeSuper?: boolean;
 	includeHecs?: boolean;
-	handleClick?: (snapshot: YearlySnapshot) => void;
+	handleClick?: (index: number) => void;
+	activeIndex?: number;
 }
 
 const ForecastChart: FC<Props> = ({
-	finances,
 	handleClick,
-	years = 5,
+	yearlySnapshots,
+	activeIndex,
 	includeSuper = true,
 	includeHecs = false,
 }) => {
-	const [storedFinances] = useAtom(financeAtom);
-
-	const financialDetails = finances ?? storedFinances;
-
-	const { yearlySnapshots } = estimateSavings(financialDetails, {
-		years,
-		includeSuperInTotal: includeSuper,
-	});
-
 	const stocksExist =
 		yearlySnapshots.reduce(
 			(total, val) => (total += val.totalInvested ?? 0),
@@ -89,6 +77,20 @@ const ForecastChart: FC<Props> = ({
 		);
 	}
 
+	const BackgroundRender = ({ index, width, height, x, y }: any) => {
+		if (index !== activeIndex) {
+			return <path x="0" y="0" height="0" width="0" />;
+		}
+
+		return (
+			<path
+				fillOpacity={0.1}
+				fill={"black"}
+				d={`M ${x},${y} h ${width} v ${height} h ${-width} Z`}
+			></path>
+		);
+	};
+
 	return (
 		<ResponsiveContainer
 			width="100%"
@@ -135,8 +137,16 @@ const ForecastChart: FC<Props> = ({
 						dataKey={bar.dataKey}
 						stackId={"income"}
 						fill={bar.fill}
-						onClick={handleClick}
-						className="cursor-pointer"
+						onClick={(e: { year: number }) => {
+							handleClick && handleClick(e.year - 1);
+						}}
+						className={`cursor-pointer z-10`}
+						background={
+							(includeSuper && bar.name === "Super") ||
+							(!includeSuper && bar.name === "Cash") ? (
+								<BackgroundRender />
+							) : undefined
+						}
 					>
 						{idx === incomeStack.length - 1 && (
 							<LabelList

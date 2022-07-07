@@ -4,19 +4,24 @@ import { financeAtom } from "@state/finance-atom";
 import { calculateAnnualExpenseAmount } from "@utils/finance-helpers";
 import { YearlySnapshot } from "@utils/forecast";
 import { useAtom } from "jotai";
-import { FC } from "react";
+import { FC, RefObject } from "react";
 import Indent from "./indent";
 import Section from "./section";
 
 interface Props {
 	snapshot: YearlySnapshot;
+	innerRef?: RefObject<HTMLDivElement>;
 }
 
-const Breakdown: FC<Props> = ({ snapshot }) => {
+const Breakdown: FC<Props> = ({ snapshot, innerRef, ...rest }) => {
 	const [finances] = useAtom(financeAtom);
 
 	return (
-		<div className="flex flex-col w-full items-center h-full">
+		<div
+			className="flex flex-col w-full items-center h-full"
+			ref={innerRef}
+			{...rest}
+		>
 			<div className={`flex flex-col px-2 box-border origin-top w-full`}>
 				<Section
 					heading={[

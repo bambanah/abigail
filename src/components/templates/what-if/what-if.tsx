@@ -1,19 +1,23 @@
+import Button from "@atoms/button";
 import Header from "@atoms/header";
+import Heading from "@atoms/heading";
 import Input from "@atoms/input";
 import Breakdown from "@molecules/breakdown";
 import ForecastChart from "@molecules/forecast-chart";
 import { financeAtom } from "@state/finance-atom";
-import { YearlySnapshot } from "@utils/forecast";
+import { estimateSavings, YearlySnapshot } from "@utils/forecast";
 import { isValidNumber } from "@utils/generic";
 import { useAtom } from "jotai";
-import { useState } from "react";
+import { createRef, useEffect, useState } from "react";
+import { IoChevronUp } from "react-icons/io5";
 import { useDebounce } from "use-debounce";
 import FormControl from "../../atoms/form-control";
 
 const WhatIf = () => {
 	const [finances] = useAtom(financeAtom);
 
-	const [snapshot, setSnapshot] = useState<YearlySnapshot | undefined>();
+	const [snapshots, setSnapshots] = useState<YearlySnapshot[] | undefined>();
+	const [activeIndex, setActiveIndex] = useState<number | undefined>();
 
 	const [yearsToForecast, setYearsToForecast] = useState(5);
 	const [salary, setSalary] = useState(finances.salary);
@@ -26,6 +30,32 @@ const WhatIf = () => {
 
 	const [debouncedYearsToForecast] = useDebounce(yearsToForecast, 1000);
 	const [debouncedSalary] = useDebounce(salary, 1000);
+
+	const breakdownRef = createRef<HTMLDivElement>();
+
+	useEffect(() => {
+		const tmpFinances = {
+			...finances,
+			salary: debouncedSalary,
+			hecs,
+			schemes: {
+				fhss,
+			},
+		};
+		const { yearlySnapshots } = estimateSavings(tmpFinances, {
+			years: debouncedYearsToForecast,
+			includeSuperInTotal: includeSuperInForecast,
+		});
+
+		setSnapshots(yearlySnapshots);
+	}, [
+		debouncedSalary,
+		debouncedYearsToForecast,
+		fhss,
+		finances,
+		hecs,
+		includeSuperInForecast,
+	]);
 
 	return (
 		<div className="w-full h-full max-w-7xl p-10 flex flex-col gap-10">
@@ -74,23 +104,29 @@ const WhatIf = () => {
 				</ul>
 			</div>
 
-			<div className="border border-base-content p-5 flex flex-col gap-5 raised">
+			<div
+				className="border border-base-content p-5 flex flex-col gap-5 raised"
+				ref={breakdownRef}
+			>
 				<div className="w-full h-96">
-					<ForecastChart
-						finances={{
-							...finances,
-							salary: debouncedSalary,
-							hecs,
-							schemes: {
-								fhss,
-							},
-						}}
-						years={debouncedYearsToForecast}
-						includeSuper={includeSuperInForecast}
-						includeHecs={includeHecsInForecast}
-						handleClick={(s) => setSnapshot(s)}
-					/>
+					{snapshots !== undefined && snapshots.length > 0 && (
+						<ForecastChart
+							yearlySnapshots={snapshots}
+							includeSuper={includeSuperInForecast}
+							includeHecs={includeHecsInForecast}
+							handleClick={(index) => {
+								setActiveIndex(index);
+
+								breakdownRef.current?.scrollIntoView({
+									behavior: "smooth",
+									block: "start",
+								});
+							}}
+							activeIndex={activeIndex}
+						/>
+					)}
 				</div>
+
 				<div className="flex gap-16 items-center justify-center font-bold">
 					<FormControl
 						id="includeSuper"
@@ -108,6 +144,8 @@ const WhatIf = () => {
 					/>
 					<div className="flex items-center gap-2">
 						<Input
+							type="number"
+							step="1"
 							className="w-14 h-10"
 							id="yearsToForecast"
 							value={yearsToForecast}
@@ -125,7 +163,41 @@ const WhatIf = () => {
 					</div>
 				</div>
 			</div>
-			{snapshot && <Breakdown snapshot={snapshot} />}
+
+			<div className="flex flex-col gap-5">
+				<div className="flex gap-5">
+					<Heading id="breakdown" level="1">
+						Breakdown
+					</Heading>
+					<div className="flex pb-3 gap-2 overflow-x-auto">
+						{Array.from({ length: debouncedYearsToForecast }).map((_, idx) => (
+							<Button
+								key={idx}
+								className={`btn-outline ${
+									idx === activeIndex ? "btn-disabled" : ""
+								}`}
+								onClick={() => {
+									setActiveIndex(idx);
+								}}
+							>
+								Year {idx + 1}
+							</Button>
+						))}
+					</div>
+				</div>
+				{snapshots && activeIndex !== undefined && snapshots[activeIndex] ? (
+					<Breakdown snapshot={snapshots[activeIndex]} />
+				) : (
+					<div className="flex flex-col justify-center items-center gap-2 w-full pb-10">
+						<p className="text-xl font-bold flex items-center gap-2">
+							<IoChevronUp /> Select a year to display breakdown
+						</p>
+						<p className="text-lg flex items-center gap-2">
+							(You can also click the graph)
+						</p>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 };
