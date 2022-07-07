@@ -29,6 +29,7 @@
 		"jotai": "^1.7.3",
 		"next": "^12.1.6",
 		"react": "^18.2.0",
+		"react-currency-input-field": "^3.6.4",
 		"react-dom": "^18.2.0",
 		"react-icons": "^4.4.0",
 		"recharts": "^2.1.12",

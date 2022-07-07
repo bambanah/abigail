@@ -33,6 +33,13 @@ export const financialDetailsSchema = yup.object({
 			fhss: yup.boolean(),
 		})
 		.optional(),
+
+	super: yup
+		.object({
+			concessionalContribution: yup.number().min(0).optional(),
+			nonConcessionalContribution: yup.number().min(0).optional(),
+		})
+		.optional(),
 });
 
 export type FinancialDetails = yup.InferType<typeof financialDetailsSchema>;

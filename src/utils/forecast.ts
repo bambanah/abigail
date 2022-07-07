@@ -1,5 +1,9 @@
 import { FinancialDetails } from "@schema/financial-details-schema";
-import { FHSS_MAX_ANNUAL_DEPOSIT, FHSS_MAX_TOTAL_DEPOSIT } from "./constants";
+import {
+	FHSS_MAX_ANNUAL_DEPOSIT,
+	FHSS_MAX_TOTAL_DEPOSIT,
+	MAXIMUM_ANNUAL_SUPER_CONTRIBUTIONS,
+} from "./constants";
 import { calculateTotalExpenses } from "./finance";
 import {
 	calculateEmployerSuperContribution,
@@ -287,19 +291,29 @@ function salarySacrifice(
 
 		assessableIncome -= amountToDeposit;
 
-		globals.totalFhssDeposit += amountToDeposit;
 		snapshot.super.fhssDepositAmount = amountToDeposit;
 
+		globals.totalFhssDeposit += amountToDeposit;
 		globals.fhssAmountInSuper += 0.85 * amountToDeposit;
 	}
 	snapshot.super.fhssAmountInSuper = globals.fhssAmountInSuper;
 
-	// TODO: Voluntary concessional super contributions
-	const concessionalSuperCont = 0;
-	globals.superAmount += 0.85 * concessionalSuperCont;
-	snapshot.super.concessionalCont = concessionalSuperCont;
+	// TODO: Account for contributions above the maximum
+	if (
+		finances.super?.concessionalContribution &&
+		snapshot.super.employerCont < MAXIMUM_ANNUAL_SUPER_CONTRIBUTIONS
+	) {
+		const concessionalSuperCont = Math.min(
+			finances.super.concessionalContribution,
+			MAXIMUM_ANNUAL_SUPER_CONTRIBUTIONS - snapshot.super.employerCont
+		);
 
-	assessableIncome - concessionalSuperCont;
+		snapshot.super.concessionalCont = concessionalSuperCont;
+
+		globals.superAmount += 0.85 * concessionalSuperCont;
+
+		assessableIncome - concessionalSuperCont;
+	}
 
 	return assessableIncome;
 }

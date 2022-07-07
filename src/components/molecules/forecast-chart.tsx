@@ -77,6 +77,7 @@ const ForecastChart: FC<Props> = ({
 		);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const BackgroundRender = ({ index, width, height, x, y }: any) => {
 		if (index !== activeIndex) {
 			return <path x="0" y="0" height="0" width="0" />;

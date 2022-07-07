@@ -22,11 +22,11 @@ const Navigation = () => {
 				</Link>
 
 				<div className="flex items-start gap-2">
-					<NavLink href="/" icon={IoHomeOutline} iconActive={IoHome}>
-						Dashboard
-					</NavLink>
-					<NavLink href="/what-if" icon={IoHelp}>
+					<NavLink href="/" icon={IoHelp}>
 						What If...
+					</NavLink>
+					<NavLink href="/dashboard" icon={IoHomeOutline} iconActive={IoHome}>
+						Dashboard
 					</NavLink>
 					<NavLink
 						href="/expenses"

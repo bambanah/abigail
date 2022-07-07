@@ -4,7 +4,7 @@ import Heading from "@atoms/heading";
 import Input from "@atoms/input";
 import Breakdown from "@molecules/breakdown";
 import ForecastChart from "@molecules/forecast-chart";
-import { financeAtom } from "@state/finance-atom";
+import { financeAtom, temporaryFinanceAtom } from "@state/finance-atom";
 import { estimateSavings, YearlySnapshot } from "@utils/forecast";
 import { isValidNumber } from "@utils/generic";
 import { useAtom } from "jotai";
@@ -15,69 +15,113 @@ import FormControl from "../../atoms/form-control";
 
 const WhatIf = () => {
 	const [finances] = useAtom(financeAtom);
+	const [temporaryFinances, setTemporaryFinances] =
+		useAtom(temporaryFinanceAtom);
+
+	const debounceDelay = 1000;
 
 	const [snapshots, setSnapshots] = useState<YearlySnapshot[] | undefined>();
 	const [activeIndex, setActiveIndex] = useState<number | undefined>();
 
-	const [yearsToForecast, setYearsToForecast] = useState(5);
 	const [salary, setSalary] = useState(finances.salary);
+	const [debouncedSalary] = useDebounce(salary, debounceDelay);
+
+	const [concessionalSuper, setConcessionalSuper] = useState(0);
+	const [debouncedConcessionalSuper] = useDebounce(
+		concessionalSuper,
+		debounceDelay
+	);
+
+	const [nonConcessionalSuper, setNonConcessionalSuper] = useState(0);
+	const [debouncedNonConcessionalSuper] = useDebounce(
+		nonConcessionalSuper,
+		debounceDelay
+	);
+
+	const [yearsToForecast, setYearsToForecast] = useState(5);
+	const [debouncedYearsToForecast] = useDebounce(
+		yearsToForecast,
+		debounceDelay
+	);
+
 	const [hecs, setHecs] = useState(finances.hecs ?? false);
-	const [additionalSuper, setAdditionalSuper] = useState(0);
+	const [debouncedHecs] = useDebounce(hecs, debounceDelay);
+
+	const [hecsAmount, setHecsAmount] = useState(finances.hecsAmount ?? 0);
+	const [debouncedHecsAmount] = useDebounce(hecsAmount, debounceDelay);
+
 	const [fhss, setFhss] = useState(finances.schemes?.fhss ?? false);
+	const [debouncedFhss] = useDebounce(fhss, debounceDelay);
 
+	const [includeSuperInForecast, setIncludeSuperInForecast] = useState(true);
 	const [includeHecsInForecast, setIncludeHecsInForecast] = useState(false);
-	const [includeSuperInForecast, setIncludeSuperInForecast] = useState(false);
-
-	const [debouncedYearsToForecast] = useDebounce(yearsToForecast, 1000);
-	const [debouncedSalary] = useDebounce(salary, 1000);
 
 	const breakdownRef = createRef<HTMLDivElement>();
 
 	useEffect(() => {
-		const tmpFinances = {
+		setTemporaryFinances({
 			...finances,
 			salary: debouncedSalary,
-			hecs,
+			hecs: debouncedHecs,
+			hecsAmount: debouncedHecsAmount,
 			schemes: {
-				fhss,
+				fhss: debouncedFhss,
 			},
-		};
-		const { yearlySnapshots } = estimateSavings(tmpFinances, {
+			super: {
+				concessionalContribution: debouncedConcessionalSuper,
+				nonConcessionalContribution: debouncedNonConcessionalSuper,
+			},
+		});
+	}, [
+		debouncedConcessionalSuper,
+		debouncedFhss,
+		debouncedHecs,
+		debouncedHecsAmount,
+		debouncedNonConcessionalSuper,
+		debouncedSalary,
+		finances,
+		setTemporaryFinances,
+	]);
+
+	useEffect(() => {
+		const { yearlySnapshots } = estimateSavings(temporaryFinances, {
 			years: debouncedYearsToForecast,
 			includeSuperInTotal: includeSuperInForecast,
 		});
 
 		setSnapshots(yearlySnapshots);
-	}, [
-		debouncedSalary,
-		debouncedYearsToForecast,
-		fhss,
-		finances,
-		hecs,
-		includeSuperInForecast,
-	]);
+	}, [debouncedYearsToForecast, includeSuperInForecast, temporaryFinances]);
 
 	return (
-		<div className="w-full h-full max-w-7xl p-10 flex flex-col gap-10">
+		<div className="w-full h-full max-w-7xl p-10 flex flex-col gap-7">
 			<Header className="self-start">What if...</Header>
 
 			<div className="flex flex-wrap gap-5">
 				<FormControl
+					type="currency"
 					label="My salary was..."
 					id="salary"
 					value={salary}
-					onChange={(e) => {
-						if (isValidNumber(e.target.value))
-							setSalary(Number(e.target.value));
+					onChange={(value) => {
+						if (isValidNumber(value)) setSalary(Number(value));
 					}}
 				/>
 				<FormControl
-					label="I contributed more to super..."
-					id="salary"
-					value={additionalSuper.toString()}
-					onChange={(e) => {
-						if (!Number.isNaN(+e.target.value))
-							setAdditionalSuper(+e.target.value);
+					type="currency"
+					label="Concessional"
+					id="concessionalSuper"
+					value={concessionalSuper}
+					onChange={(value) => {
+						if (!Number.isNaN(+value)) setConcessionalSuper(+value);
+					}}
+				/>
+				<FormControl
+					type="currency"
+					label="Non-Concessional"
+					id="nonConcessionalSuper"
+					value={nonConcessionalSuper}
+					onChange={(value) => {
+						if (!Number.isNaN(+value)) setNonConcessionalSuper(+value);
 					}}
 				/>
 				<div className="flex flex-col gap-2">
@@ -95,6 +139,14 @@ const WhatIf = () => {
 						onChange={() => setHecs(!hecs)}
 						id="hecs"
 						checked={hecs}
+					/>
+					<FormControl
+						type="currency"
+						id="hecsAmount"
+						value={hecsAmount}
+						onChange={(value) => {
+							if (!Number.isNaN(+value)) setHecsAmount(+value);
+						}}
 					/>
 				</div>
 				<ul>
@@ -164,29 +216,30 @@ const WhatIf = () => {
 				</div>
 			</div>
 
-			<div className="flex flex-col gap-5">
-				<div className="flex gap-5">
-					<Heading id="breakdown" level="1">
-						Breakdown
-					</Heading>
-					<div className="flex pb-3 gap-2 overflow-x-auto">
-						{Array.from({ length: debouncedYearsToForecast }).map((_, idx) => (
-							<Button
-								key={idx}
-								className={`btn-outline ${
-									idx === activeIndex ? "btn-disabled" : ""
-								}`}
-								onClick={() => {
-									setActiveIndex(idx);
-								}}
-							>
-								Year {idx + 1}
-							</Button>
-						))}
-					</div>
+			<div className="flex flex-col items-center m-auto mt-10 gap-5 max-w-3xl w-full">
+				<Heading id="breakdown" level="1">
+					Breakdown
+				</Heading>
+				<div className="flex pb-3 gap-2 overflow-x-auto">
+					{Array.from({ length: debouncedYearsToForecast }).map((_, idx) => (
+						<Button
+							key={idx}
+							className={`btn-outline ${
+								idx === activeIndex ? "btn-disabled" : ""
+							}`}
+							onClick={() => {
+								setActiveIndex(idx);
+							}}
+						>
+							Year {idx + 1}
+						</Button>
+					))}
 				</div>
+
 				{snapshots && activeIndex !== undefined && snapshots[activeIndex] ? (
-					<Breakdown snapshot={snapshots[activeIndex]} />
+					<div className="max-w-md w-full mt-5">
+						<Breakdown snapshot={snapshots[activeIndex]} />
+					</div>
 				) : (
 					<div className="flex flex-col justify-center items-center gap-2 w-full pb-10">
 						<p className="text-xl font-bold flex items-center gap-2">
