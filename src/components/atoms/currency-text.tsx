@@ -2,12 +2,14 @@ import { formatDollars } from "@utils/generic";
 
 interface CurrentTextProps extends React.HTMLAttributes<HTMLSpanElement> {
 	value?: number;
+	children?: number;
 	includeSign?: boolean;
 	useColor?: boolean | string;
 }
 
 const CurrencyText = ({
 	value,
+	children,
 	includeSign = true,
 	className,
 	useColor = true,
@@ -15,19 +17,21 @@ const CurrencyText = ({
 }: CurrentTextProps) => {
 	let color: string;
 
-	if (value === undefined || value === 0) {
-		color = "text-slate-500";
+	const amount = children ?? value;
+
+	if (amount === undefined || amount === 0) {
+		color = "text-neutral";
 	} else if (useColor === true) {
-		color = value > 0 ? "text-green-600" : "text-red-600";
+		color = amount > 0 ? "text-success" : "text-error";
 	} else if (typeof useColor === "string") {
 		color = useColor;
 	} else {
-		color = "text-slate-500";
+		color = "text-neutral";
 	}
 
 	return (
 		<span className={`${color} ${className}`} {...rest}>
-			{value !== undefined ? formatDollars(value, includeSign) : "N/A"}
+			{amount !== undefined ? formatDollars(amount, { includeSign }) : "N/A"}
 		</span>
 	);
 };

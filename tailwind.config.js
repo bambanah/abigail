@@ -7,7 +7,13 @@ module.exports = {
 			fontFamily: {
 				sans: ["Inter", ...defaultTheme.fontFamily.sans],
 				serif: ["Spectral", "Lora", ...defaultTheme.fontFamily.serif],
-				display: ["Outfit", ...defaultTheme.fontFamily.sans],
+				display: ['"Source Serif Pro"', ...defaultTheme.fontFamily.serif],
+				mono: ['"Overpass Mono"', ...defaultTheme.fontFamily.mono],
+				outfit: ["Outfit", ...defaultTheme.fontFamily.sans],
+			},
+			colors: {
+				primary: "#DC2626",
+				...defaultTheme.colors,
 			},
 		},
 	},

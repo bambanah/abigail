@@ -1,11 +1,7 @@
 import { Expense } from "@schema/expense-schema";
 import { FinancialDetails } from "@schema/financial-details-schema";
-import {
-	calculatePostTaxAmount,
-	estimateSavings,
-	calculateTotalExpenses,
-	getAdvantageOfFHSS,
-} from "@utils/finance";
+import { calculateTotalExpenses, getAdvantageOfFHSS } from "@utils/finance";
+import { calculatePostTaxAmount, estimateSavings } from "@utils/forecast";
 
 describe("finance calculations", () => {
 	const defaultSalary = 100_000;
@@ -78,28 +74,28 @@ describe("finance calculations", () => {
 		finances.bonus = [25_000];
 
 		savings = estimateSavings(finances);
-		expect(savings.estimatedTotal).toEqual(86_103);
+		expect(savings.estimatedTotal).toEqual(88_728);
 		expect(savings.cash).toEqual(63_108);
-		expect(savings.super).toEqual(10_500);
+		expect(savings.super).toEqual(13_125);
 
 		savings = estimateSavings(finances, { years: 2 });
-		expect(savings.estimatedTotal).toEqual(154_035.7);
+		expect(savings.estimatedTotal).toEqual(156_818.2);
 		expect(savings.cash).toEqual(106_403.5);
-		expect(savings.super).toEqual(21_892.5);
+		expect(savings.super).toEqual(24_675);
 
 		finances.bonus = [25_000, 15_000];
 
 		savings = estimateSavings(finances, { years: 2 });
-		expect(savings.estimatedTotal).toEqual(160_910.7);
+		expect(savings.estimatedTotal).toEqual(165_268.2);
 		expect(savings.cash).toEqual(113_278.5);
-		expect(savings.super).toEqual(21_892.5);
+		expect(savings.super).toEqual(26_250);
 
 		finances.schemes = { fhss: false };
 
 		savings = estimateSavings(finances, { years: 2 });
-		expect(savings.estimatedTotal).toEqual(148_702.25);
+		expect(savings.estimatedTotal).toEqual(153_059.75);
 		expect(savings.cash).toEqual(126_809.75);
-		expect(savings.super).toEqual(21_892.5);
+		expect(savings.super).toEqual(26_250);
 	});
 
 	it("Should calculate savings with FHSS", () => {
@@ -226,9 +222,9 @@ describe("finance calculations", () => {
 
 		const savings = estimateSavings(finances);
 
-		expect(savings.estimatedTotal).toEqual(74_078);
+		expect(savings.estimatedTotal).toEqual(76_178);
 		expect(savings.cash).toEqual(51_083);
-		expect(savings.super).toEqual(10_500);
+		expect(savings.super).toEqual(12_600);
 	});
 
 	it("Should calculate savings with expenses, hecs, bonus, and no fhss", () => {
@@ -244,9 +240,9 @@ describe("finance calculations", () => {
 
 		const savings = estimateSavings(finances);
 
-		expect(savings.estimatedTotal).toEqual(68_633);
+		expect(savings.estimatedTotal).toEqual(70_733);
 		expect(savings.cash).toEqual(58_133);
-		expect(savings.super).toEqual(10_500);
+		expect(savings.super).toEqual(12_600);
 	});
 });
 

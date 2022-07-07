@@ -1,5 +1,5 @@
 import Button from "@atoms/button";
-import Checkbox from "@atoms/checkbox";
+import FormControl from "@atoms/form-control";
 import Heading from "@atoms/heading";
 import FormField from "@molecules/form-field";
 import {
@@ -27,6 +27,7 @@ const FinanceForm = () => {
 						: [],
 				utilizeFHSS: initialFinances?.schemes?.fhss ?? false,
 				hecs: initialFinances.hecs ?? false,
+				hecsAmount: initialFinances.hecsAmount?.toString() ?? "0",
 				expenses: initialFinances.expenses ?? [],
 			}}
 			validationSchema={financialDetailsSchema}
@@ -36,6 +37,7 @@ const FinanceForm = () => {
 					bonus: [isValidNumber(values.bonus[0]) ? Number(values.bonus) : 0],
 					schemes: { fhss: values.utilizeFHSS },
 					hecs: values.hecs,
+					hecsAmount: values.hecs ? Number(values.hecsAmount) : 0,
 					expenses: values.expenses.map(({ title, amount, cadence }) => ({
 						title,
 						amount: Number(amount),
@@ -62,16 +64,14 @@ const FinanceForm = () => {
 			}) => (
 				<form
 					onSubmit={handleSubmit}
-					className="box-border w-full flex flex-col gap-5 items-center shadow-xl p-5 rounded-lg"
+					className="box-border w-full flex flex-col items-center rounded-lg gap-2"
 				>
-					<Heading level="3">Your Finances</Heading>
-
-					<div className="flex gap-3 flex-col w-full">
+					<div className="flex gap-1 flex-col w-full">
 						<Heading level="4">Income</Heading>
 						<hr className="w-full" />
 					</div>
 
-					<div className="flex gap-3 justify-between w-full">
+					<div className="flex gap-3 justify-start w-full">
 						<FormField
 							label="Salary"
 							name="salary"
@@ -88,38 +88,51 @@ const FinanceForm = () => {
 							name="bonus.0"
 							onChange={handleChange}
 							onBlur={handleBlur}
-							// error={touched.bonus[0] ? errors.bonus[0] : ""}
 						/>
 					</div>
 
-					<div className="flex gap-3 justify-between w-full">
-						<Checkbox
-							name="utilizeFHSS"
+					<div className="flex gap-3 justify-start w-full">
+						<FormControl
+							id="utilizeFHSS"
+							type="checkbox"
 							onChange={handleChange}
 							label="Utilise FHSS?"
 							checked={values.utilizeFHSS}
-							className="basis-1/2"
 						/>
 
-						<Checkbox
-							name="hecs"
+						<FormControl
+							id="hecs"
+							type="checkbox"
 							onChange={handleChange}
-							label="Do you have HECS?"
+							label="HECS"
 							checked={values.hecs}
-							className="basis-1/2"
 						/>
+
+						{values.hecs && (
+							<FormControl
+								type="text"
+								id="hecsAmount"
+								className="w-24"
+								onChange={handleChange}
+								onBlur={handleBlur}
+								value={values.hecsAmount}
+								error={touched.hecsAmount ? errors.hecsAmount : ""}
+							/>
+						)}
 					</div>
 
 					<FieldArray
 						name="expenses"
 						render={(arrayHelpers) => (
 							<div className="flex flex-col gap-3 justify-between w-full">
-								<Heading level="4">Expenses</Heading>
-								<hr />
+								<div className="flex flex-col gap-1">
+									<Heading level="4">Expenses</Heading>
+									<hr />
+								</div>
 								{values.expenses && values.expenses.length > 0 ? (
 									<>
 										{values.expenses.map((_, idx) => (
-											<div key={idx} className="flex gap-3 items-center">
+											<div key={idx} className="flex gap-2 items-center">
 												<div className="form-control">
 													{idx === 0 && (
 														<label
@@ -137,7 +150,7 @@ const FinanceForm = () => {
 														placeholder="Title"
 														className={`input input-bordered w-full max-w-xs ${
 															getIn(errors, `expenses.${idx}.title`)
-																? "border-red-300"
+																? "border-error"
 																: ""
 														}`}
 													/>
@@ -160,7 +173,7 @@ const FinanceForm = () => {
 														placeholder="Amount"
 														className={`input input-bordered w-full max-w-xs ${
 															getIn(errors, `expenses.${idx}.amount`)
-																? "border-red-300"
+																? "border-error"
 																: ""
 														}`}
 													/>
@@ -181,7 +194,7 @@ const FinanceForm = () => {
 														component="select"
 														id={`expenses.${idx}.cadence`}
 														name={`expenses.${idx}.cadence`}
-														className="select select-bordered w-34"
+														className="select select-bordered w-min-content"
 													>
 														<option value="weekly">Weekly</option>
 														<option value="fortnightly">Fortnightly</option>
@@ -190,13 +203,24 @@ const FinanceForm = () => {
 														<option value="annually">Annually</option>
 													</Field>
 												</div>
-
-												<button
-													className="btn btn-ghost text-red-500 w-8 min-h-8 max-h-8 p-0"
-													onClick={() => arrayHelpers.remove(idx)}
-												>
-													<FaTimes />
-												</button>
+												<div className="form-control">
+													{idx === 0 && (
+														<label
+															className="label"
+															htmlFor={`expenses.0.title`}
+														>
+															<span className="label-text text-transparent">
+																.
+															</span>
+														</label>
+													)}
+													<button
+														className="btn btn-ghost text-error w-6 min-h-6 max-h-6 p-0"
+														onClick={() => arrayHelpers.remove(idx)}
+													>
+														<FaTimes />
+													</button>
+												</div>
 											</div>
 										))}
 

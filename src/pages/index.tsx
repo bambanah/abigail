@@ -1,12 +1,12 @@
-import Home from "@templates/home";
 import Layout from "@templates/layout";
+import WhatIf from "@templates/what-if";
 
-const LandingPage = () => {
+const WhatIfPage = () => {
 	return (
 		<Layout>
-			<Home />
+			<WhatIf />
 		</Layout>
 	);
 };
 
-export default LandingPage;
+export default WhatIfPage;

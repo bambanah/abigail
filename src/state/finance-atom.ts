@@ -7,3 +7,7 @@ export const financeAtom = atomWithStorage("financialDetails", {
 } as FinancialDetails);
 
 export const isEditingFinanceAtom = atom(false);
+
+export const temporaryFinanceAtom = atom({
+	salary: 50_000,
+} as FinancialDetails);

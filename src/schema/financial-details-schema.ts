@@ -19,6 +19,7 @@ export const financialDetailsSchema = yup.object({
 		)
 		.optional(),
 	hecs: yup.boolean().optional(),
+	hecsAmount: yup.number().optional(),
 
 	currentCash: yup
 		.number()
@@ -30,6 +31,13 @@ export const financialDetailsSchema = yup.object({
 	schemes: yup
 		.object({
 			fhss: yup.boolean(),
+		})
+		.optional(),
+
+	super: yup
+		.object({
+			concessionalContribution: yup.number().min(0).optional(),
+			nonConcessionalContribution: yup.number().min(0).optional(),
 		})
 		.optional(),
 });

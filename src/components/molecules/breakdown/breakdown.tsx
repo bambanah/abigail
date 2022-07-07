@@ -1,87 +1,83 @@
 import CurrencyText from "@atoms/currency-text";
 import Heading from "@atoms/heading";
 import { financeAtom } from "@state/finance-atom";
-import { estimateSavings, calculateTotalExpenses } from "@utils/finance";
 import {
 	calculateAnnualExpenseAmount,
-	calculateEmployerSuperContribution,
-	calculateHecsRepayment,
-	calculateIncomeTax,
-	calculateMedicareLevy,
-	calculateMedicareLevySurcharge,
+	getMarginalTaxRate,
 } from "@utils/finance-helpers";
+import { YearlySnapshot } from "@utils/forecast";
 import { useAtom } from "jotai";
-import { useState } from "react";
-import { FaChevronDown } from "react-icons/fa";
+import { FC, RefObject } from "react";
 import Indent from "./indent";
 import Section from "./section";
 
-const Breakdown = () => {
-	const [isExpanded, setIsExpanded] = useState(false);
+interface Props {
+	snapshot: YearlySnapshot;
+	innerRef?: RefObject<HTMLDivElement>;
+}
+
+const Breakdown: FC<Props> = ({ snapshot, innerRef, ...rest }) => {
 	const [finances] = useAtom(financeAtom);
 
-	const assessableIncome =
-		finances.salary +
-		(finances.bonus !== undefined && finances.bonus.length > 0
-			? finances.bonus[0]
-			: 0);
-
-	const employerSuperCont =
-		calculateEmployerSuperContribution(assessableIncome);
-	const totalPackage = assessableIncome + employerSuperCont;
-
-	const fhssPaid = finances.schemes?.fhss ? 15_000 : 0;
-	const totalAdditionalSuper = fhssPaid;
-
-	const incomeTax = calculateIncomeTax(assessableIncome);
-	const medicareLevy = calculateMedicareLevy(assessableIncome);
-	const medicareLevySurcharge =
-		calculateMedicareLevySurcharge(assessableIncome);
-	const hecsRepayment = calculateHecsRepayment(assessableIncome);
-	const totalTaxPaid =
-		incomeTax + medicareLevy + medicareLevySurcharge + hecsRepayment;
-
 	return (
-		<div className="flex flex-col gap-5 max-w-96 items-center">
-			<button
-				onClick={() => setIsExpanded(!isExpanded)}
-				className="text-blue-500 flex items-center gap-1"
-			>
-				<span>{isExpanded ? "Hide" : "View"} Breakdown</span>
-				<FaChevronDown
-					className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}
-				/>
-			</button>
-			<div
-				className={`flex flex-col gap-5 overflow-hidden shadow-lg p-5 box-border origin-top min-w-full rounded-md transition-all ${
-					isExpanded ? "max-h-full h-full" : "max-h-0 h-0 py-0"
-				}`}
-			>
-				<Section heading={["Salary Package", totalPackage]}>
-					<Indent label="Salary" value={finances.salary} />
-					<Indent label="Bonus" value={finances.bonus?.at(0) ?? 0} />
-					<Indent label="Employer Super Cont." value={employerSuperCont} />
-				</Section>
-
-				<Section heading={["Additional Super", totalAdditionalSuper]} neutral>
-					<Indent label="FHSS" value={fhssPaid} neutral />
-					<Indent label="Concessional Cont." neutral />
-					<Indent label="Non-Concessional Cont." neutral />
-				</Section>
-
-				<Section heading={["Deductions", -totalTaxPaid]}>
-					<Indent label="Income Tax" value={-incomeTax} />
-					<Indent label="Medicare Levy" value={-medicareLevy} />
-					<Indent
-						label="Medicare Levy Surcharge"
-						value={-medicareLevySurcharge}
-					/>
-					<Indent label="HECS" value={-hecsRepayment} />
+		<div
+			className="flex flex-col w-full m-auto items-center h-full"
+			ref={innerRef}
+			{...rest}
+		>
+			<div className={`flex flex-col px-2 box-border origin-top w-full`}>
+				<Section heading={["Salary Package", snapshot.salary + snapshot.bonus]}>
+					<Indent label="Salary" value={snapshot.salary} />
+					<Indent label="Bonus" value={snapshot.bonus} />
 				</Section>
 
 				<Section
-					heading={["Expenses", -calculateTotalExpenses(finances.expenses)]}
+					heading={[
+						"Superannuation",
+						snapshot.super.employerCont +
+							snapshot.super.concessionalCont +
+							snapshot.super.nonConcessionalCont,
+					]}
+					neutral
 				>
+					<Indent
+						label="Employer Super Cont."
+						value={snapshot.super.employerCont * 0.85}
+						subText={snapshot.super.employerCont * 0.15}
+					/>
+					<Indent
+						label="FHSS Deposit"
+						value={snapshot.super.fhssDepositAmount * 0.85}
+						subText={snapshot.super.fhssDepositAmount * 0.15}
+						neutral
+					/>
+					<Indent
+						label="Concessional Cont."
+						value={snapshot.super.concessionalCont * 0.85}
+						subText={snapshot.super.concessionalCont * 0.15}
+						neutral
+					/>
+					<Indent
+						label="Non-Concessional Cont."
+						value={snapshot.super.nonConcessionalCont * 0.85}
+						subText={snapshot.super.nonConcessionalCont * 0.15}
+					/>
+				</Section>
+
+				<Section heading={["Deductions", -snapshot.totalDeductions]}>
+					<Indent label="Income Tax" value={-snapshot.deductions.incomeTax} />
+					<Indent
+						label="Medicare Levy"
+						value={-snapshot.deductions.medicareLevy}
+					/>
+					<Indent
+						label="Medicare Levy Surcharge"
+						value={-snapshot.deductions.medicareLevySurcharge}
+					/>
+					<Indent label="HECS" value={-snapshot.deductions.hecs} />
+				</Section>
+
+				<Section heading={["Expenses", -snapshot.totalExpenses]}>
 					{finances.expenses?.map((expense, idx) => (
 						<Indent
 							key={idx}
@@ -91,12 +87,46 @@ const Breakdown = () => {
 					))}
 				</Section>
 
-				<div className="flex justify-between">
+				<div className="flex justify-between mt-5 mb-10 raised p-3">
 					<Heading level="4">Savings</Heading>
 					<Heading level="4">
-						<CurrencyText value={estimateSavings(finances).estimatedTotal} />
+						<CurrencyText
+							value={
+								snapshot.postExpensesIncome +
+								snapshot.super.fhssDepositAmount * 0.85
+							}
+						/>
 					</Heading>
 				</div>
+
+				<Section heading={["Balances", undefined]} neutral>
+					<Indent label="Cash Savings" value={snapshot.totalCash} neutral />
+					<Indent
+						label="FHSS Amount in Super"
+						value={snapshot.super.fhssAmountInSuper}
+						neutral
+					/>
+					<Indent
+						level={2}
+						label="Total House Deposit"
+						value={
+							snapshot.super.fhssAmountInSuper -
+							(1 - Math.max(0, getMarginalTaxRate(snapshot.salary) - 0.3)) +
+							snapshot.totalCash
+						}
+						className="font-bold"
+					/>
+					<Indent
+						label="Superannuation Balance"
+						value={snapshot.totalSuper}
+						neutral
+					/>
+					<Indent
+						label="HECS Amount Left"
+						value={snapshot.hecsAmountLeft}
+						neutral
+					/>
+				</Section>
 			</div>
 		</div>
 	);

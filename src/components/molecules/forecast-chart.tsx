@@ -1,70 +1,194 @@
-import { financeAtom } from "@state/finance-atom";
-import { estimateSavings } from "@utils/finance";
+import CurrencyText from "@atoms/currency-text";
+import { YearlySnapshot } from "@utils/forecast";
 import { formatDollars, round } from "@utils/generic";
-import { useAtom } from "jotai";
-import React, { FC } from "react";
+import { FC } from "react";
 import {
-	ResponsiveContainer,
-	BarChart,
+	Bar,
 	CartesianGrid,
+	ComposedChart,
+	LabelList,
+	Legend,
+	Line,
+	ResponsiveContainer,
+	Tooltip,
 	XAxis,
 	YAxis,
-	Tooltip,
-	Legend,
-	Bar,
-	LabelList,
 } from "recharts";
 
 interface Props {
-	years?: number;
+	yearlySnapshots: YearlySnapshot[];
+	includeSuper?: boolean;
+	includeHecs?: boolean;
+	handleClick?: (index: number) => void;
+	activeIndex?: number;
 }
 
-const ForecastChart: FC<Props> = ({ years = 5 }) => {
-	const [finances] = useAtom(financeAtom);
+const ForecastChart: FC<Props> = ({
+	handleClick,
+	yearlySnapshots,
+	activeIndex,
+	includeSuper = true,
+	includeHecs = false,
+}) => {
+	const stocksExist =
+		yearlySnapshots.reduce(
+			(total, val) => (total += val.totalInvested ?? 0),
+			0
+		) > 0;
 
-	const { yearlySnapshots } = estimateSavings(finances, { years });
+	interface Bar {
+		name: string;
+		dataKey: string;
+		fill: string;
+		stackId?: string;
+	}
+
+	const incomeStack: Bar[] = [];
+
+	if (stocksExist)
+		incomeStack.push({
+			name: "Stocks",
+			dataKey: "totalInvested",
+			fill: "#a855f7",
+		});
+
+	if (includeSuper)
+		incomeStack.push({
+			name: "Super",
+			dataKey: "totalSuper",
+			fill: "#2563eb",
+		});
+
+	incomeStack.push(
+		{ name: "Cash", dataKey: "totalCash", fill: "#ef4444" },
+		{ name: "FHSS", dataKey: "super.fhssAmountInSuper", fill: "#f59e0b" }
+	);
+
+	if (yearlySnapshots[0].totalValue < 0) {
+		return (
+			<div className="w-full h-full flex gap-2 justify-center items-center font-mono font-bold text-xl">
+				You&#39;d lose
+				<CurrencyText
+					includeSign={false}
+					value={yearlySnapshots[0].totalValue}
+				/>
+				in the first year alone!
+			</div>
+		);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const BackgroundRender = ({ index, width, height, x, y }: any) => {
+		if (index !== activeIndex) {
+			return <path x="0" y="0" height="0" width="0" />;
+		}
+
+		return (
+			<path
+				fillOpacity={0.1}
+				fill={"black"}
+				d={`M ${x},${y} h ${width} v ${height} h ${-width} Z`}
+			></path>
+		);
+	};
 
 	return (
-		<ResponsiveContainer width="100%" height={450}>
-			<BarChart
+		<ResponsiveContainer
+			width="100%"
+			height={"100%"}
+			className="font-mono font-bold"
+		>
+			<ComposedChart
 				data={yearlySnapshots}
 				margin={{
-					top: 20,
-					right: 30,
-					left: 20,
-					bottom: 5,
+					top: 0,
+					right: 0,
+					left: 0,
+					bottom: 0,
 				}}
 			>
-				<CartesianGrid strokeDasharray="3 3" />
-				<XAxis dataKey="year" tickFormatter={(value) => `Year ${value}`} />
-				<YAxis tickFormatter={(value) => formatDollars(value)} />
+				<CartesianGrid strokeDasharray="4" vertical={false} />
+				<XAxis
+					dataKey="year"
+					tickFormatter={(value) => `Year ${value}`}
+					stroke="black"
+				/>
+				<YAxis
+					tickFormatter={(value) =>
+						formatDollars(value, { shorten: true, decimalPlaces: 0 })
+					}
+					stroke="black"
+					// TODO: dynamically calculate domain
+				/>
 				<Tooltip
 					labelFormatter={(value) => `Year ${value}`}
-					formatter={(value: number) => [formatDollars(value)]}
+					formatter={(value: number, name: string) => [
+						`${formatDollars(value, {
+							decimalPlaces: 0,
+							shorten: true,
+						})} ${name}`,
+					]}
 				/>
 				<Legend />
-				<Bar name="Cash" dataKey="totalCash" stackId="income" fill="#8884d8" />
-				{/* <Bar
-					name="Stocks"
-					dataKey="totalInvested"
-					stackId="income"
-					fill="#ffb555"
-				/> */}
-				<Bar
-					name="Super"
-					dataKey="totalSuper"
-					stackId="income"
-					fill="#82ca9d"
-				/>
-				<Bar name="FHSS" dataKey="super.fhss" stackId="income" fill="#fb95ff">
-					<LabelList
-						dataKey="totalValue"
-						position="top"
-						formatter={(value: number) => formatDollars(round(value, 0))}
-						className="fill-slate-600"
-					/>
-				</Bar>
-			</BarChart>
+
+				{incomeStack.map((bar, idx) => (
+					<Bar
+						key={bar.dataKey}
+						name={bar.name}
+						dataKey={bar.dataKey}
+						stackId={"income"}
+						fill={bar.fill}
+						onClick={(e: { year: number }) => {
+							handleClick && handleClick(e.year - 1);
+						}}
+						className={`cursor-pointer z-10`}
+						background={
+							(includeSuper && bar.name === "Super") ||
+							(!includeSuper && bar.name === "Cash") ? (
+								<BackgroundRender />
+							) : undefined
+						}
+					>
+						{idx === incomeStack.length - 1 && (
+							<LabelList
+								dataKey={"totalValue"}
+								position="insideTopRight"
+								formatter={(value: number) =>
+									formatDollars(round(value, 0), {
+										shorten: true,
+										decimalPlaces: 0,
+									})
+								}
+								className="font-bold font-mono"
+							/>
+						)}
+					</Bar>
+				))}
+
+				{includeHecs && (
+					<Line
+						name="Remaining HECS"
+						dataKey="hecsAmountLeft"
+						fill="#000000"
+						stroke="#000000"
+						animationDuration={300}
+					>
+						<LabelList
+							dataKey={"hecsAmountLeft"}
+							position="left"
+							formatter={(value: number) =>
+								value > 0
+									? formatDollars(round(value, 0), {
+											shorten: true,
+											decimalPlaces: 0,
+									  })
+									: ""
+							}
+							className="font-bold font-mono text-md"
+						/>
+					</Line>
+				)}
+			</ComposedChart>
 		</ResponsiveContainer>
 	);
 };
