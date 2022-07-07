@@ -182,10 +182,10 @@ export const calculateMedicareLevySurcharge = (
 	} else if (totalIncome <= (isFamily ? familyBaseThreshold : 90_000)) {
 		return 0;
 	} else if (totalIncome <= (isFamily ? 210_000 : 105_000)) {
-		return assessableIncome * 0.01;
+		return round(assessableIncome * 0.01);
 	} else if (totalIncome <= (isFamily ? 280_000 : 140_000)) {
-		return assessableIncome * 0.0125;
+		return round(assessableIncome * 0.0125);
 	} else {
-		return assessableIncome * 0.015;
+		return round(assessableIncome * 0.015);
 	}
 };

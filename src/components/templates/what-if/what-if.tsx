@@ -3,13 +3,17 @@ import Input from "@atoms/input";
 import Breakdown from "@molecules/breakdown";
 import ForecastChart from "@molecules/forecast-chart";
 import { financeAtom } from "@state/finance-atom";
+import { YearlySnapshot } from "@utils/forecast";
 import { isValidNumber } from "@utils/generic";
 import { useAtom } from "jotai";
 import { useState } from "react";
+import { useDebounce } from "use-debounce";
 import FormControl from "../../atoms/form-control";
 
 const WhatIf = () => {
 	const [finances] = useAtom(financeAtom);
+
+	const [snapshot, setSnapshot] = useState<YearlySnapshot | undefined>();
 
 	const [yearsToForecast, setYearsToForecast] = useState(5);
 	const [salary, setSalary] = useState(finances.salary);
@@ -19,6 +23,9 @@ const WhatIf = () => {
 
 	const [includeHecsInForecast, setIncludeHecsInForecast] = useState(false);
 	const [includeSuperInForecast, setIncludeSuperInForecast] = useState(false);
+
+	const [debouncedYearsToForecast] = useDebounce(yearsToForecast, 1000);
+	const [debouncedSalary] = useDebounce(salary, 1000);
 
 	return (
 		<div className="w-full h-full max-w-7xl p-10 flex flex-col gap-10">
@@ -72,15 +79,16 @@ const WhatIf = () => {
 					<ForecastChart
 						finances={{
 							...finances,
-							salary,
+							salary: debouncedSalary,
 							hecs,
 							schemes: {
 								fhss,
 							},
 						}}
-						years={yearsToForecast}
+						years={debouncedYearsToForecast}
 						includeSuper={includeSuperInForecast}
 						includeHecs={includeHecsInForecast}
+						handleClick={(s) => setSnapshot(s)}
 					/>
 				</div>
 				<div className="flex gap-16 items-center justify-center font-bold">
@@ -117,8 +125,7 @@ const WhatIf = () => {
 					</div>
 				</div>
 			</div>
-
-			<Breakdown />
+			{snapshot && <Breakdown snapshot={snapshot} />}
 		</div>
 	);
 };

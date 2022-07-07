@@ -1,22 +1,21 @@
+import CurrencyText from "@atoms/currency-text";
 import { FinancialDetails } from "@schema/financial-details-schema";
 import { financeAtom } from "@state/finance-atom";
-import { estimateSavings } from "@utils/finance";
+import { YearlySnapshot, estimateSavings } from "@utils/forecast";
 import { formatDollars, round } from "@utils/generic";
 import { useAtom } from "jotai";
-import React, { FC } from "react";
+import { FC } from "react";
 import {
-	ResponsiveContainer,
-	BarChart,
+	Bar,
 	CartesianGrid,
+	ComposedChart,
+	LabelList,
+	Legend,
+	Line,
+	ResponsiveContainer,
+	Tooltip,
 	XAxis,
 	YAxis,
-	Tooltip,
-	Legend,
-	Bar,
-	LabelList,
-	LineChart,
-	Line,
-	ComposedChart,
 } from "recharts";
 
 interface Props {
@@ -24,10 +23,12 @@ interface Props {
 	years?: number;
 	includeSuper?: boolean;
 	includeHecs?: boolean;
+	handleClick?: (snapshot: YearlySnapshot) => void;
 }
 
 const ForecastChart: FC<Props> = ({
 	finances,
+	handleClick,
 	years = 5,
 	includeSuper = true,
 	includeHecs = false,
@@ -54,12 +55,7 @@ const ForecastChart: FC<Props> = ({
 		stackId?: string;
 	}
 
-	const incomeStack: Bar[] = [
-		{ name: "Cash", dataKey: "totalCash", fill: "#2563eb" },
-		{ name: "FHSS", dataKey: "super.fhss", fill: "#ef4444" },
-	];
-
-	const deductionStack: Bar[] = [];
+	const incomeStack: Bar[] = [];
 
 	if (stocksExist)
 		incomeStack.push({
@@ -72,46 +68,62 @@ const ForecastChart: FC<Props> = ({
 		incomeStack.push({
 			name: "Super",
 			dataKey: "totalSuper",
-			fill: "#f59e0b",
+			fill: "#2563eb",
 		});
 
-	if (includeHecs)
-		deductionStack.push({
-			name: "HECS",
-			dataKey: "deductions.hecs",
-			stackId: "deductions",
-			fill: "#10B981",
-		});
-	const bars: { [income: string]: Bar[] } = {
-		income: incomeStack,
-		deductions: deductionStack,
-	};
+	incomeStack.push(
+		{ name: "Cash", dataKey: "totalCash", fill: "#ef4444" },
+		{ name: "FHSS", dataKey: "super.fhssAmountInSuper", fill: "#f59e0b" }
+	);
 
-	// TODO: Don't render chart if trend is negative
+	if (yearlySnapshots[0].totalValue < 0) {
+		return (
+			<div className="w-full h-full flex gap-2 justify-center items-center font-mono font-bold text-xl">
+				You&#39;d lose
+				<CurrencyText
+					includeSign={false}
+					value={yearlySnapshots[0].totalValue}
+				/>
+				in the first year alone!
+			</div>
+		);
+	}
 
 	return (
-		<ResponsiveContainer width="100%" height={"100%"}>
+		<ResponsiveContainer
+			width="100%"
+			height={"100%"}
+			className="font-mono font-bold"
+		>
 			<ComposedChart
 				data={yearlySnapshots}
 				margin={{
-					top: 20,
-					right: 30,
-					left: 20,
-					bottom: 5,
+					top: 0,
+					right: 0,
+					left: 0,
+					bottom: 0,
 				}}
-				className="text-red-500"
 			>
 				<CartesianGrid strokeDasharray="4" vertical={false} />
-				<XAxis dataKey="year" tickFormatter={(value) => `Year ${value}`} />
+				<XAxis
+					dataKey="year"
+					tickFormatter={(value) => `Year ${value}`}
+					stroke="black"
+				/>
 				<YAxis
 					tickFormatter={(value) =>
 						formatDollars(value, { shorten: true, decimalPlaces: 0 })
 					}
+					stroke="black"
+					// TODO: dynamically calculate domain
 				/>
 				<Tooltip
 					labelFormatter={(value) => `Year ${value}`}
-					formatter={(value: number) => [
-						formatDollars(value, { decimalPlaces: 0, shorten: true }),
+					formatter={(value: number, name: string) => [
+						`${formatDollars(value, {
+							decimalPlaces: 0,
+							shorten: true,
+						})} ${name}`,
 					]}
 				/>
 				<Legend />
@@ -123,18 +135,20 @@ const ForecastChart: FC<Props> = ({
 						dataKey={bar.dataKey}
 						stackId={"income"}
 						fill={bar.fill}
+						onClick={handleClick}
+						className="cursor-pointer"
 					>
 						{idx === incomeStack.length - 1 && (
 							<LabelList
 								dataKey={"totalValue"}
-								position="top"
+								position="insideTopRight"
 								formatter={(value: number) =>
 									formatDollars(round(value, 0), {
 										shorten: true,
 										decimalPlaces: 0,
 									})
 								}
-								className="fill-base-content"
+								className="font-bold font-mono"
 							/>
 						)}
 					</Bar>
@@ -142,21 +156,24 @@ const ForecastChart: FC<Props> = ({
 
 				{includeHecs && (
 					<Line
-						name="HECS"
-						dataKey="deductions.hecs"
-						fill="#f8563a"
-						stroke="#f8563a"
+						name="Remaining HECS"
+						dataKey="hecsAmountLeft"
+						fill="#000000"
+						stroke="#000000"
+						animationDuration={300}
 					>
 						<LabelList
-							dataKey={"deductions.hecs"}
-							position="top"
+							dataKey={"hecsAmountLeft"}
+							position="left"
 							formatter={(value: number) =>
-								formatDollars(round(value, 0), {
-									shorten: true,
-									decimalPlaces: 0,
-								})
+								value > 0
+									? formatDollars(round(value, 0), {
+											shorten: true,
+											decimalPlaces: 0,
+									  })
+									: ""
 							}
-							className="fill-primary-content"
+							className="font-bold font-mono text-md"
 						/>
 					</Line>
 				)}

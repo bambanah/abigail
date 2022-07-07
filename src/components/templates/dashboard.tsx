@@ -11,7 +11,7 @@ const Dashboard = () => {
 	const [editingFinances] = useAtom(isEditingFinanceAtom);
 
 	return (
-		<div className="max-w-7xl w-full mt-10 p-10 gap-8 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 grid-flow-row-dense auto-rows-[10rem]">
+		<div className="max-w-7xl w-full p-10 gap-8 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 grid-flow-row-dense auto-rows-[10rem]">
 			<Tile rows={editingFinances ? 3 : 1} cols={2}>
 				{editingFinances ? <FinanceForm /> : <FinanceSummary />}
 			</Tile>
@@ -21,10 +21,10 @@ const Dashboard = () => {
 			</Tile>
 
 			<Tile rows={4} className="items-start">
-				<Breakdown />
+				{/* <Breakdown /> */}
 			</Tile>
 
-			<Tile rows={2} cols={2}>
+			<Tile rows={2} cols={2} className="overflow-y-hidden">
 				<ForecastChart years={5} />
 			</Tile>
 		</div>

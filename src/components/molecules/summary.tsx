@@ -1,8 +1,8 @@
-import { estimateSavings } from "@utils/finance";
 import { formatDollars } from "@utils/generic";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { financeAtom } from "@state/finance-atom";
+import { estimateSavings } from "@utils/forecast";
 
 const Summary = () => {
 	const [finances] = useAtom(financeAtom);
