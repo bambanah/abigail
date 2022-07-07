@@ -18,7 +18,7 @@ const Dashboard = () => {
 	});
 
 	return (
-		<div className="max-w-7xl w-full p-10 gap-8 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 grid-flow-row-dense auto-rows-[10rem]">
+		<div className="max-w-7xl w-full p-10 gap-y-8 grid grid-cols-1 sm:gap-x-8 sm:grid-cols-2 xl:grid-cols-3 grid-flow-row-dense auto-rows-[10rem]">
 			<Tile rows={editingFinances ? 3 : 1} cols={2}>
 				{editingFinances ? <FinanceForm /> : <FinanceSummary />}
 			</Tile>
