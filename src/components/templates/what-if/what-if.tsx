@@ -1,17 +1,17 @@
-import Checkbox from "@atoms/checkbox";
 import Header from "@atoms/header";
+import Input from "@atoms/input";
 import Breakdown from "@molecules/breakdown";
 import ForecastChart from "@molecules/forecast-chart";
 import { financeAtom } from "@state/finance-atom";
 import { isValidNumber } from "@utils/generic";
 import { useAtom } from "jotai";
 import { useState } from "react";
-import Input from "./input";
+import FormControl from "../../atoms/form-control";
 
 const WhatIf = () => {
 	const [finances] = useAtom(financeAtom);
 
-	const [yearsToForecast, setYearsToForecast] = useState(10);
+	const [yearsToForecast, setYearsToForecast] = useState(5);
 	const [salary, setSalary] = useState(finances.salary);
 	const [hecs, setHecs] = useState(finances.hecs ?? false);
 	const [additionalSuper, setAdditionalSuper] = useState(0);
@@ -21,11 +21,11 @@ const WhatIf = () => {
 	const [includeSuperInForecast, setIncludeSuperInForecast] = useState(false);
 
 	return (
-		<div className="w-full h-full p-10 flex flex-col gap-10">
-			<Header>What if...</Header>
+		<div className="w-full h-full max-w-7xl p-10 flex flex-col gap-10">
+			<Header className="self-start">What if...</Header>
 
 			<div className="flex flex-wrap gap-5">
-				<Input
+				<FormControl
 					label="My salary was..."
 					id="salary"
 					value={salary}
@@ -34,7 +34,7 @@ const WhatIf = () => {
 							setSalary(Number(e.target.value));
 					}}
 				/>
-				<Input
+				<FormControl
 					label="I contributed more to super..."
 					id="salary"
 					value={additionalSuper.toString()}
@@ -43,18 +43,20 @@ const WhatIf = () => {
 							setAdditionalSuper(+e.target.value);
 					}}
 				/>
-				<div className="flex flex-col">
+				<div className="flex flex-col gap-2">
 					<p>I utilise</p>
-					<Checkbox
+					<FormControl
+						type="checkbox"
 						label="FHSS"
 						onChange={() => setFhss(!fhss)}
-						name="fhss"
+						id="fhss"
 						checked={fhss}
 					/>
-					<Checkbox
+					<FormControl
+						type="checkbox"
 						label="HECS"
 						onChange={() => setHecs(!hecs)}
-						name="hecs"
+						id="hecs"
 						checked={hecs}
 					/>
 				</div>
@@ -65,10 +67,7 @@ const WhatIf = () => {
 				</ul>
 			</div>
 
-			<div
-				style={{ boxShadow: "6px 6px 0px black" }}
-				className="border border-base-content p-5 flex flex-col gap-5"
-			>
+			<div className="border border-base-content p-5 flex flex-col gap-5 raised">
 				<div className="w-full h-96">
 					<ForecastChart
 						finances={{
@@ -85,21 +84,23 @@ const WhatIf = () => {
 					/>
 				</div>
 				<div className="flex gap-16 items-center justify-center font-bold">
-					<Checkbox
+					<FormControl
+						id="includeSuper"
+						type="checkbox"
 						label="Include Super"
 						onChange={() => setIncludeSuperInForecast(!includeSuperInForecast)}
-						name="includeSuperInForecast"
 						checked={includeSuperInForecast}
 					/>
-					<Checkbox
+					<FormControl
+						id="includeHecs"
+						type="checkbox"
 						label="Include HECS"
 						onChange={() => setIncludeHecsInForecast(!includeHecsInForecast)}
-						name="includeHecsInForecast"
 						checked={includeHecsInForecast}
 					/>
 					<div className="flex items-center gap-2">
-						<input
-							className="input input-bordered w-14 h-10"
+						<Input
+							className="w-14 h-10"
 							id="yearsToForecast"
 							value={yearsToForecast}
 							onChange={(e) => {

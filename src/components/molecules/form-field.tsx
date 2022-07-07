@@ -10,7 +10,7 @@ interface Props {
 		(e: React.FocusEvent<any, Element>): void;
 		<T = any>(fieldOrEvent: T): T extends string ? (e: any) => void : void;
 	};
-	label: string;
+	label?: string;
 	placeholder?: string;
 	error?: string;
 	name: string;
@@ -30,10 +30,12 @@ const FormField: React.FC<Props> = ({
 }) => {
 	return (
 		<div className="form-control">
-			<Label htmlFor={name} className="font-bold">
-				{label}
-				{required && <span className="text-error"> *</span>}
-			</Label>
+			{label && (
+				<Label htmlFor={name} className="font-bold">
+					{label}
+					{required && <span className="text-error"> *</span>}
+				</Label>
+			)}
 			<Input
 				placeholder={placeholder ?? label}
 				id={name}

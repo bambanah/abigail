@@ -1,5 +1,5 @@
 import Button from "@atoms/button";
-import Checkbox from "@atoms/checkbox";
+import FormControl from "@atoms/form-control";
 import Heading from "@atoms/heading";
 import FormField from "@molecules/form-field";
 import {
@@ -27,7 +27,7 @@ const FinanceForm = () => {
 						: [],
 				utilizeFHSS: initialFinances?.schemes?.fhss ?? false,
 				hecs: initialFinances.hecs ?? false,
-				hecsAmount: initialFinances.hecsAmount?.toString() ?? "",
+				hecsAmount: initialFinances.hecsAmount?.toString() ?? "0",
 				expenses: initialFinances.expenses ?? [],
 			}}
 			validationSchema={financialDetailsSchema}
@@ -64,14 +64,14 @@ const FinanceForm = () => {
 			}) => (
 				<form
 					onSubmit={handleSubmit}
-					className="box-border w-full flex flex-col items-center rounded-lg"
+					className="box-border w-full flex flex-col items-center rounded-lg gap-2"
 				>
 					<div className="flex gap-1 flex-col w-full">
 						<Heading level="4">Income</Heading>
 						<hr className="w-full" />
 					</div>
 
-					<div className="flex gap-3 justify-between w-full">
+					<div className="flex gap-3 justify-start w-full">
 						<FormField
 							label="Salary"
 							name="salary"
@@ -88,37 +88,37 @@ const FinanceForm = () => {
 							name="bonus.0"
 							onChange={handleChange}
 							onBlur={handleBlur}
-							// error={touched.bonus[0] ? errors.bonus[0] : ""}
 						/>
 					</div>
 
-					<div className="flex gap-3 justify-between w-full">
-						<Checkbox
-							name="hecs"
-							onChange={handleChange}
-							label="Do you have HECS?"
-							checked={values.hecs}
-							className="basis-1/2"
-						/>
-
-						<FormField
-							label="Hecs Amount"
-							name="hecsAmount"
-							onChange={handleChange}
-							onBlur={handleBlur}
-							value={values.hecsAmount}
-							error={touched.hecsAmount ? errors.hecsAmount : ""}
-						/>
-					</div>
-
-					<div className="flex gap-3 justify-between w-full">
-						<Checkbox
-							name="utilizeFHSS"
+					<div className="flex gap-3 justify-start w-full">
+						<FormControl
+							id="utilizeFHSS"
+							type="checkbox"
 							onChange={handleChange}
 							label="Utilise FHSS?"
 							checked={values.utilizeFHSS}
-							className="basis-1/2"
 						/>
+
+						<FormControl
+							id="hecs"
+							type="checkbox"
+							onChange={handleChange}
+							label="HECS"
+							checked={values.hecs}
+						/>
+
+						{values.hecs && (
+							<FormControl
+								type="text"
+								id="hecsAmount"
+								className="w-24"
+								onChange={handleChange}
+								onBlur={handleBlur}
+								value={values.hecsAmount}
+								error={touched.hecsAmount ? errors.hecsAmount : ""}
+							/>
+						)}
 					</div>
 
 					<FieldArray
@@ -203,13 +203,24 @@ const FinanceForm = () => {
 														<option value="annually">Annually</option>
 													</Field>
 												</div>
-
-												<button
-													className="btn btn-ghost text-error w-6 min-h-6 max-h-6 p-0"
-													onClick={() => arrayHelpers.remove(idx)}
-												>
-													<FaTimes />
-												</button>
+												<div className="form-control">
+													{idx === 0 && (
+														<label
+															className="label"
+															htmlFor={`expenses.0.title`}
+														>
+															<span className="label-text text-transparent">
+																.
+															</span>
+														</label>
+													)}
+													<button
+														className="btn btn-ghost text-error w-6 min-h-6 max-h-6 p-0"
+														onClick={() => arrayHelpers.remove(idx)}
+													>
+														<FaTimes />
+													</button>
+												</div>
 											</div>
 										))}
 

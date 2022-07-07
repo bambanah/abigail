@@ -1,28 +1,18 @@
 import Display from "@atoms/display";
 import Link from "next/link";
-import { FC, HTMLAttributes } from "react";
 import {
 	IoHelp,
 	IoHome,
 	IoHomeOutline,
-	IoPerson,
-	IoPersonOutline,
-	IoSettings,
-	IoSettingsOutline,
 	IoWallet,
 	IoWalletOutline,
 } from "react-icons/io5";
 import NavLink from "./nav-link";
 
-const Navigation: FC<HTMLAttributes<HTMLDivElement>> = ({ className }) => {
+const Navigation = () => {
 	return (
-		<div
-			className={`justify-between w-full max-w-3xl box-border lg:w-64 lg:h-screen lg:max-h-screen shadow-md z-10 ${className}`}
-		>
-			<div
-				style={{ height: "calc(100% - 8rem)" }}
-				className="flex box-border lg:flex-col lg:my-16 border-neutral-100 lg:gap-20 lg:items-center"
-			>
+		<div className={`w-full max-w-7xl md:pt-5 md:px-10 self-center`}>
+			<div className="flex justify-between shadow-md md:raised p-4">
 				<Link href="/">
 					<a>
 						<Display className="text-center text-4xl text-primary">
@@ -31,7 +21,7 @@ const Navigation: FC<HTMLAttributes<HTMLDivElement>> = ({ className }) => {
 					</a>
 				</Link>
 
-				<div className="flex items-start gap-6 lg:flex-col lg:w-full">
+				<div className="flex items-start gap-2">
 					<NavLink href="/" icon={IoHomeOutline} iconActive={IoHome}>
 						Dashboard
 					</NavLink>
@@ -44,19 +34,6 @@ const Navigation: FC<HTMLAttributes<HTMLDivElement>> = ({ className }) => {
 						iconActive={IoWallet}
 					>
 						Expenses
-					</NavLink>
-				</div>
-
-				<div className="flex mt-auto items-start gap-5 lg:flex-col lg:w-full">
-					<NavLink href="/account" icon={IoPersonOutline} iconActive={IoPerson}>
-						Account
-					</NavLink>
-					<NavLink
-						href="/settings"
-						icon={IoSettingsOutline}
-						iconActive={IoSettings}
-					>
-						Settings
 					</NavLink>
 				</div>
 			</div>

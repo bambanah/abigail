@@ -1,27 +1,20 @@
-import React from "react";
+import React, { InputHTMLAttributes } from "react";
 
-interface Props {
-	label: string;
+interface Props extends InputHTMLAttributes<HTMLInputElement> {
 	checked: boolean;
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-	name: string;
 	className?: string;
 }
 
-const Checkbox = ({ checked, label, name, onChange, className }: Props) => {
+const Checkbox = ({ checked, onChange, className, ...rest }: Props) => {
 	return (
-		<div className={`form-control max-w-xs ${className}`}>
-			<label className="label cursor-pointer justify-start gap-2">
-				<input
-					type="checkbox"
-					checked={checked}
-					onChange={onChange}
-					className="checkbox"
-					name={name}
-				/>
-				<span className="label-text">{label}</span>
-			</label>
-		</div>
+		<input
+			type="checkbox"
+			checked={checked}
+			onChange={onChange}
+			className={`checkbox appearance-none cursor-pointer border border-black h-6 w-6 rounded-none ${className}`}
+			{...rest}
+		/>
 	);
 };
 

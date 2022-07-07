@@ -7,7 +7,7 @@ const Header: FC<HTMLAttributes<HTMLDivElement>> = ({
 }) => {
 	return (
 		<div className={`w-max p-5 ${className ?? ""}`}>
-			<Display className="font-outfit">{children}</Display>
+			<Display className="font-display md:text-6xl">{children}</Display>
 		</div>
 	);
 };

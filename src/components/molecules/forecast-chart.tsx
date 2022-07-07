@@ -14,6 +14,9 @@ import {
 	Legend,
 	Bar,
 	LabelList,
+	LineChart,
+	Line,
+	ComposedChart,
 } from "recharts";
 
 interface Props {
@@ -84,9 +87,11 @@ const ForecastChart: FC<Props> = ({
 		deductions: deductionStack,
 	};
 
+	// TODO: Don't render chart if trend is negative
+
 	return (
 		<ResponsiveContainer width="100%" height={"100%"}>
-			<BarChart
+			<ComposedChart
 				data={yearlySnapshots}
 				margin={{
 					top: 20,
@@ -96,7 +101,7 @@ const ForecastChart: FC<Props> = ({
 				}}
 				className="text-red-500"
 			>
-				<CartesianGrid strokeDasharray="3 3" />
+				<CartesianGrid strokeDasharray="4" vertical={false} />
 				<XAxis dataKey="year" tickFormatter={(value) => `Year ${value}`} />
 				<YAxis
 					tickFormatter={(value) =>
@@ -111,34 +116,51 @@ const ForecastChart: FC<Props> = ({
 				/>
 				<Legend />
 
-				{Object.keys(bars).map((stackName) =>
-					bars[stackName].map((bar, idx) => (
-						<Bar
-							key={bar.dataKey}
-							name={bar.name}
-							dataKey={bar.dataKey}
-							stackId={stackName}
-							fill={bar.fill}
-						>
-							{idx === bars[stackName].length - 1 && (
-								<LabelList
-									dataKey={
-										stackName === "income" ? "totalValue" : "deductions.hecs"
-									}
-									position="top"
-									formatter={(value: number) =>
-										formatDollars(round(value, 0), {
-											shorten: true,
-											decimalPlaces: 0,
-										})
-									}
-									className="fill-base-content"
-								/>
-							)}
-						</Bar>
-					))
+				{incomeStack.map((bar, idx) => (
+					<Bar
+						key={bar.dataKey}
+						name={bar.name}
+						dataKey={bar.dataKey}
+						stackId={"income"}
+						fill={bar.fill}
+					>
+						{idx === incomeStack.length - 1 && (
+							<LabelList
+								dataKey={"totalValue"}
+								position="top"
+								formatter={(value: number) =>
+									formatDollars(round(value, 0), {
+										shorten: true,
+										decimalPlaces: 0,
+									})
+								}
+								className="fill-base-content"
+							/>
+						)}
+					</Bar>
+				))}
+
+				{includeHecs && (
+					<Line
+						name="HECS"
+						dataKey="deductions.hecs"
+						fill="#f8563a"
+						stroke="#f8563a"
+					>
+						<LabelList
+							dataKey={"deductions.hecs"}
+							position="top"
+							formatter={(value: number) =>
+								formatDollars(round(value, 0), {
+									shorten: true,
+									decimalPlaces: 0,
+								})
+							}
+							className="fill-primary-content"
+						/>
+					</Line>
 				)}
-			</BarChart>
+			</ComposedChart>
 		</ResponsiveContainer>
 	);
 };
