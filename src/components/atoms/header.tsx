@@ -6,7 +6,7 @@ const Header: FC<HTMLAttributes<HTMLDivElement>> = ({
 	className,
 }) => {
 	return (
-		<div className={`w-max px-5 pt-5 ${className ?? ""}`}>
+		<div className={`w-max md:px-5 md:pt-5 ${className ?? ""}`}>
 			<Display className="font-display md:text-6xl">{children}</Display>
 		</div>
 	);
