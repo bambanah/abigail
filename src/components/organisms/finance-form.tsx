@@ -1,5 +1,5 @@
 import Button from "@atoms/button";
-import FormControl from "@atoms/form-control";
+import FormControl from "@molecules/form-control";
 import Heading from "@atoms/heading";
 import FormField from "@molecules/form-field";
 import {
@@ -11,6 +11,8 @@ import { isValidNumber } from "@utils/generic";
 import { Field, FieldArray, Formik, getIn } from "formik";
 import { useAtom } from "jotai";
 import { FaTimes } from "react-icons/fa";
+import Checkbox from "@atoms/checkbox";
+import CurrencyInput from "react-currency-input-field";
 
 const FinanceForm = () => {
 	const [initialFinances, setFinances] = useAtom(financeAtom);
@@ -94,30 +96,41 @@ const FinanceForm = () => {
 					<div className="flex gap-3 justify-start w-full">
 						<FormControl
 							id="utilizeFHSS"
-							type="checkbox"
-							onChange={handleChange}
 							label="Utilise FHSS?"
-							checked={values.utilizeFHSS}
-						/>
+							labelLocation="right"
+						>
+							<Checkbox
+								name="utilizeFHSS"
+								checked={values.utilizeFHSS}
+								onChange={handleChange}
+							/>
+						</FormControl>
 
-						<FormControl
-							id="hecs"
-							type="checkbox"
-							onChange={handleChange}
-							label="HECS"
-							checked={values.hecs}
-						/>
+						<FormControl id="hecs" label="HECS" labelLocation="right">
+							<Checkbox
+								name="hecs"
+								checked={values.hecs}
+								onChange={handleChange}
+							/>
+						</FormControl>
 
 						{values.hecs && (
 							<FormControl
-								type="text"
 								id="hecsAmount"
 								className="w-24"
-								onChange={handleChange}
-								onBlur={handleBlur}
-								value={values.hecsAmount}
 								error={touched.hecsAmount ? errors.hecsAmount : ""}
-							/>
+							>
+								<CurrencyInput
+									id="hecsAmount"
+									name="hecsAmount"
+									value={values.hecsAmount}
+									defaultValue={values.hecsAmount}
+									onValueChange={handleChange}
+									onBlur={handleBlur}
+									prefix="$"
+									className="border border-black rounded-none w-full max-w-xs px-2 h-10 focus-visible:outline focus-visible:outline-black focus-visible:outline-1"
+								/>
+							</FormControl>
 						)}
 					</div>
 

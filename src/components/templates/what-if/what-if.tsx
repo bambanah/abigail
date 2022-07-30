@@ -1,9 +1,12 @@
 import Button from "@atoms/button";
+import Checkbox from "@atoms/checkbox";
+import CurrencyInput from "@atoms/currency-input";
 import Header from "@atoms/header";
 import Heading from "@atoms/heading";
 import Input from "@atoms/input";
 import Breakdown from "@molecules/breakdown";
 import ForecastChart from "@molecules/forecast-chart";
+import FormControl from "@molecules/form-control";
 import { financeAtom, temporaryFinanceAtom } from "@state/finance-atom";
 import { estimateSavings, YearlySnapshot } from "@utils/forecast";
 import { isValidNumber } from "@utils/generic";
@@ -11,7 +14,6 @@ import { useAtom } from "jotai";
 import { createRef, useEffect, useState } from "react";
 import { IoChevronUp } from "react-icons/io5";
 import { useDebounce } from "use-debounce";
-import FormControl from "../../atoms/form-control";
 
 const WhatIf = () => {
 	const [finances] = useAtom(financeAtom);
@@ -93,61 +95,70 @@ const WhatIf = () => {
 	}, [debouncedYearsToForecast, includeSuperInForecast, temporaryFinances]);
 
 	return (
-		<div className="w-full h-full max-w-7xl p-10 flex flex-col gap-7">
-			<Header className="self-start">What if...</Header>
+		<div className="w-full h-full max-w-7xl p-4 pt-10 md:p-10 flex flex-col gap-7">
+			<Header>What if...</Header>
 
 			<div className="flex flex-wrap gap-5">
-				<FormControl
-					type="currency"
-					label="My salary was..."
-					id="salary"
-					value={salary}
-					onChange={(value) => {
-						if (isValidNumber(value)) setSalary(Number(value));
-					}}
-				/>
-				<FormControl
-					type="currency"
-					label="Concessional"
-					id="concessionalSuper"
-					value={concessionalSuper}
-					onChange={(value) => {
-						if (!Number.isNaN(+value)) setConcessionalSuper(+value);
-					}}
-				/>
-				<FormControl
-					type="currency"
-					label="Non-Concessional"
-					id="nonConcessionalSuper"
-					value={nonConcessionalSuper}
-					onChange={(value) => {
-						if (!Number.isNaN(+value)) setNonConcessionalSuper(+value);
-					}}
-				/>
-				<div className="flex flex-col gap-2">
-					<p>I utilise</p>
-					<FormControl
-						type="checkbox"
-						label="FHSS"
-						onChange={() => setFhss(!fhss)}
-						id="fhss"
-						checked={fhss}
-					/>
-					<FormControl
-						type="checkbox"
-						label="HECS"
-						onChange={() => setHecs(!hecs)}
-						id="hecs"
-						checked={hecs}
-					/>
-					<FormControl
-						type="currency"
+				<FormControl label="My salary was..." id="salary">
+					<CurrencyInput
 						id="hecsAmount"
-						value={hecsAmount}
-						onChange={(value) => {
-							if (!Number.isNaN(+value)) setHecsAmount(+value);
+						name="hecsAmount"
+						value={salary}
+						defaultValue={salary}
+						onValueChange={(value) => {
+							if (isValidNumber(value as string)) setSalary(Number(value));
 						}}
 					/>
+				</FormControl>
+				<FormControl label="Concessional" id="concessionalSuper">
+					<CurrencyInput
+						id="concessionalSuper"
+						name="concessionalSuper"
+						value={concessionalSuper}
+						defaultValue={concessionalSuper}
+						onValueChange={(value) => {
+							if (isValidNumber(value as string))
+								setConcessionalSuper(Number(value));
+						}}
+					/>
+				</FormControl>
+				<FormControl label="Non-Concessional" id="nonConcessionalSuper">
+					<CurrencyInput
+						id="nonConcessionalSuper"
+						name="nonConcessionalSuper"
+						value={nonConcessionalSuper}
+						onValueChange={(value) => {
+							if (isValidNumber(value as string))
+								setNonConcessionalSuper(Number(value));
+						}}
+					/>
+				</FormControl>
+				<div className="flex flex-col gap-2">
+					<p>I utilise</p>
+					<FormControl id="fhss" label="FHSS" labelLocation="right">
+						<Checkbox
+							id="fhss"
+							checked={fhss}
+							onChange={() => setFhss(!fhss)}
+						/>
+					</FormControl>
+					<FormControl id="hecs" label="HECS" labelLocation="right">
+						<Checkbox
+							id="hecs"
+							checked={hecs}
+							onChange={() => setHecs(!hecs)}
+						/>
+					</FormControl>
+					<FormControl id="hecsAmount">
+						<CurrencyInput
+							id="hecsAmount"
+							value={hecsAmount}
+							onValueChange={(value) => {
+								if (isValidNumber(value as string))
+									setHecsAmount(Number(value));
+							}}
+						/>
+					</FormControl>
 				</div>
 				<ul>
 					<li>Expenses were $xx more/less per month</li>
@@ -157,7 +168,7 @@ const WhatIf = () => {
 			</div>
 
 			<div
-				className="border border-base-content p-5 flex flex-col gap-5 raised"
+				className="border border-base-content p-5 flex flex-col gap-5 raised -mx-2 md:mx-0"
 				ref={breakdownRef}
 			>
 				<div className="w-full h-96">
@@ -179,21 +190,31 @@ const WhatIf = () => {
 					)}
 				</div>
 
-				<div className="flex gap-16 items-center justify-center font-bold">
+				<div className="flex gap-2 sm:gap-16 items-center justify-center font-bold text-sm">
 					<FormControl
 						id="includeSuper"
-						type="checkbox"
 						label="Include Super"
-						onChange={() => setIncludeSuperInForecast(!includeSuperInForecast)}
-						checked={includeSuperInForecast}
-					/>
+						labelLocation="right"
+					>
+						<Checkbox
+							id="includeSuper"
+							checked={includeSuperInForecast}
+							onChange={() =>
+								setIncludeSuperInForecast(!includeSuperInForecast)
+							}
+						/>
+					</FormControl>
 					<FormControl
 						id="includeHecs"
-						type="checkbox"
 						label="Include HECS"
-						onChange={() => setIncludeHecsInForecast(!includeHecsInForecast)}
-						checked={includeHecsInForecast}
-					/>
+						labelLocation="right"
+					>
+						<Checkbox
+							id="includeHecs"
+							checked={includeHecsInForecast}
+							onChange={() => setIncludeHecsInForecast(!includeHecsInForecast)}
+						/>
+					</FormControl>
 					<div className="flex items-center gap-2">
 						<Input
 							type="number"
@@ -220,7 +241,7 @@ const WhatIf = () => {
 				<Heading id="breakdown" level="1">
 					Breakdown
 				</Heading>
-				<div className="flex pb-3 gap-2 overflow-x-auto">
+				<div className="flex pb-3 gap-2 w-full overflow-x-auto m-auto">
 					{Array.from({ length: debouncedYearsToForecast }).map((_, idx) => (
 						<Button
 							key={idx}
