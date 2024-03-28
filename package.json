@@ -40,8 +40,8 @@
 		"zod": "^3.17.3"
 	},
 	"devDependencies": {
-		"@commitlint/cli": "^17.0.3",
-		"@commitlint/config-conventional": "^17.0.3",
+		"@commitlint/cli": "^19.0.0",
+		"@commitlint/config-conventional": "^19.0.0",
 		"@testing-library/jest-dom": "^5.16.4",
 		"@testing-library/react": "^14.0.0",
 		"@types/jest": "^28.1.3",
